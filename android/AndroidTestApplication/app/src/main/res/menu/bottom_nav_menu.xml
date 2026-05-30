@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_home"
+        android:title="Home"
+        android:icon="@android:drawable/ic_menu_home" />
+
+    <item
+        android:id="@+id/nav_hello"
+        android:title="Hello"
+        android:icon="@android:drawable/ic_menu_info_details" />
+
+    <item
+        android:id="@+id/nav_clone"
+        android:title="Clone"
+        android:icon="@android:drawable/ic_menu_gallery" />
+
+</menu>
