@@ -69,8 +69,6 @@ class SkiaTestApplication {
       }
       lastTickTime = tickTime
 
-      val page = this.page ?: return@scheduleAtFixedRate
-
       if (page.needsRepainting()) {
         SwingUtilities.invokeLater { skiaLayer.needRedraw() }
       }
