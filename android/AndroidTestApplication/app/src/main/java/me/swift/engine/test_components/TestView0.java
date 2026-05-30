@@ -15,8 +15,8 @@ public class TestView0 extends View {
   @Override
   public void paint(Device device, Painter painter, Page page) {
 
-    float x = new Random().nextFloat() + 50f;
-    float y = new Random().nextFloat() + 50f;
+    float x = new Random().nextInt(50) + 50f;
+    float y = new Random().nextInt(50) + 50f;
 
     if (viewAnimation != null) {
       painter.paintText(String.valueOf(viewAnimation.currentValue), x, y, "", 255);

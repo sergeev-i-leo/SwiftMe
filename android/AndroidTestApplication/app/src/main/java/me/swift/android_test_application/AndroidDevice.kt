@@ -17,12 +17,17 @@ class AndroidDevice(
   private var lastTickTime = 0L
   private val mainHandler = Handler(Looper.getMainLooper())
 
+  @Volatile
+  private var isPainting = false
+
   override fun getTime(): Long {
     return System.currentTimeMillis()
   }
 
   override fun startRepainting() {
-    if (scheduledExecutorService != null) return
+    if (scheduledExecutorService != null) {
+      return
+    }
 
     scheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
     lastTickTime = getTime()
@@ -34,13 +39,23 @@ class AndroidDevice(
     )
   }
 
+  fun onPaintStart() {
+    isPainting = true
+  }
+
+  fun onPaintEnd() {
+    isPainting = false
+  }
+
   private fun tick() {
-    val tickTime = getTime()
-    if (tickTime - lastTickTime < 16) return
+    val tickTime = time
+    if (tickTime - lastTickTime < 16) {
+      return
+    }
 
     lastTickTime = tickTime
 
-    if (activity.page.needsRepainting()) {
+    if ((!isPainting) && (activity.page.needsRepainting())) {
       mainHandler.post { view.invalidate() }
     }
 

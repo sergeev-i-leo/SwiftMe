@@ -14,7 +14,16 @@ class AndroidPainter(
     this.canvas = canvas;
   }
 
-  override fun paintText(text: String?, x: Float, y: Float, deviceFontKey: String?, deviceColor: Int) {
-    super.paintText(text, x, y, deviceFontKey, deviceColor)
+  override fun paintText(text: String, x: Float, y: Float, deviceFontKey: String?, deviceColor: Int) {
+    paint.apply {
+      color = 0xFFFF0000.toInt()
+      isAntiAlias = true
+      style = Paint.Style.FILL
+      textSize = 40f
+      letterSpacing = 0f
+      isElegantTextHeight = false
+    }
+
+    canvas?.drawText(text, x, y, paint)
   }
 }
