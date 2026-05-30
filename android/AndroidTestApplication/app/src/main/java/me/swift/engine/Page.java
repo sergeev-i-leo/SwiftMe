@@ -49,7 +49,7 @@ public class Page extends TranspilableClass {
     }
     firstAnimation = animation;
 
-    device.startRepainting();
+    device.startRepainting(this);
   }
 
   public synchronized void removeAnimation(Animation animation) {

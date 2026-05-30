@@ -12,11 +12,6 @@ class AndroidDevice(
   private val view: AndroidDeviceView
 ) : Device() {
 
-  private var scheduledExecutorService: ScheduledExecutorService? = null
-  private var lastTickTime = 0L
-  private val mainHandler = Handler(Looper.getMainLooper())
-  private val isPainting = AtomicBoolean(false)
-
   override fun getTime(): Long = System.currentTimeMillis()
 
   override fun startRepainting() {

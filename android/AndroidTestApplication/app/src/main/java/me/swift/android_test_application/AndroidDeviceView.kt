@@ -2,39 +2,45 @@ package me.swift.android_test_application
 
 import android.content.Context
 import android.graphics.Canvas
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import me.swift.engine.Page
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 
 class AndroidDeviceView(
-  context: Context
+  context: Context,
+  private val page: Page
 ) : View(context) {
 
-  private val device = AndroidDevice(this)
+  private val androidDevice = AndroidDevice(this)
 
-  private var page: Page? = null
   private val painter = AndroidPainter()
 
   private var activePointerId = -1
   private var lastX = 0f
   private var lastY = 0f
 
+  private var scheduledExecutorService: ScheduledExecutorService? = null
+  private var lastTickTime = 0L
+  private val mainHandler = Handler(Looper.getMainLooper())
+  private val isPainting = AtomicBoolean(false)
+
   init {
     isFocusable = true
     isFocusableInTouchMode = true
   }
 
-  fun setPage(page: Page) {
-    this.page = page
-    invalidate()  // перерисовать сразу
-  }
-
-  fun getPage(): Page? {
+  fun getPage(): Page {
     return page;
   }
 
-  fun getDevice(): AndroidDevice = device
+  fun getDevice(): AndroidDevice = androidDevice
 
   override fun onTouchEvent(event: MotionEvent): Boolean {
     val action = event.actionMasked
@@ -47,7 +53,7 @@ class AndroidDeviceView(
         val y = event.getY(pointerIndex)
         lastX = x
         lastY = y
-        page?.handlePointerDown(x, y, 1)
+        page.handlePointerDown(x, y, 1)
         return true
       }
 
@@ -90,20 +96,53 @@ class AndroidDeviceView(
   }
 
   override fun onDraw(canvas: Canvas) {
-    val startTime = device.getTime()
+    val startTime = androidDevice.time
     super.onDraw(canvas)
 
-    device.onPaintStart()
+    isPainting.set(true)
     try {
       painter.setCanvas(canvas)
-      page?.paint(painter)
+      page.paint(painter)
     } finally {
-      device.onPaintEnd()
+      isPainting.set(false)
     }
 
-    val elapsedTime = device.getTime() - startTime
+    val elapsedTime = androidDevice.getTime() - startTime
     if (elapsedTime > 12) {
       Log.w("AndroidDeviceView", "Slow frame: ${elapsedTime}ms")
+    }
+  }
+
+  fun startRepainting() {
+    if (scheduledExecutorService != null) {
+      return
+    }
+
+    scheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
+    lastTickTime = androidDevice.time
+    scheduledExecutorService?.scheduleAtFixedRate(
+      { tick() },
+      0,
+      2,
+      TimeUnit.MILLISECONDS
+    )
+  }
+
+  private fun tick() {
+    val tickTime = androidDevice.time
+    if (tickTime - lastTickTime < 16) {
+      return
+    }
+
+    lastTickTime = tickTime
+
+    if ((!isPainting.get()) && (page.needsRepainting())) {
+      mainHandler.post { invalidate() }
+    }
+
+    if (!page.needsNextRepainting()) {
+      scheduledExecutorService?.shutdown()
+      scheduledExecutorService = null
     }
   }
 }
