@@ -59,15 +59,15 @@ public class JsonElement extends TranspilableClass {
     return null;
   }
 
-  public Boolean getAsBoolean() {
+  public boolean getAsBoolean() {
     return false;
   }
 
-  public Integer getAsInteger() {
+  public int getAsInteger() {
     return 0;
   }
 
-  public Double getAsDouble() {
+  public double getAsDouble() {
     return 0.0;
   }
 

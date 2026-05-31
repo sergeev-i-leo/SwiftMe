@@ -2,6 +2,7 @@ package me.swift.engine.data.json;
 
 import me.swift.engine.TranspilableClass;
 import me.swift.engine.expected.ExpectedList;
+import me.swift.engine.expected.ExpectedRuntime;
 import me.swift.engine.expected.ExpectedStringBuilder;
 
 public class JsonParser extends TranspilableClass {
@@ -23,7 +24,7 @@ public class JsonParser extends TranspilableClass {
 
   public JsonElement parse(String input) {
     if (input == null) {
-      return new JsonPrimitive("Error");
+      return new JsonBooleanPrimitive("Error");
     }
     if (this.input != null) {
       delete(this.input);
@@ -55,11 +56,11 @@ public class JsonParser extends TranspilableClass {
     }
     String string = parseString();
     if (string != null) {
-      return new JsonPrimitive(string);
+      return new JsonBooleanPrimitive(string);
     }
-    Object number = parseIntOrDouble();
-    if (number != null) {
-      return new JsonPrimitive(number);
+    JsonElement numberJsonElement = parseNumber();
+    if (numberJsonElement != null) {
+      return numberJsonElement;
     }
     jsonElement = parseLiteral();
     if (jsonElement != null) {
@@ -190,7 +191,7 @@ public class JsonParser extends TranspilableClass {
     }
   }
 
-  private Object parseIntOrDouble() {
+  private JsonElement parseNumber() {
     ExpectedStringBuilder expectedStringBuilder = new ExpectedStringBuilder();
     try {
       char character = input.charAt(position);
@@ -221,12 +222,10 @@ public class JsonParser extends TranspilableClass {
             break;
           }
         }
-        String numberString = stringBuilder.toString();
+        String numberString = expectedStringBuilder.toString();
 
-        try {
-          return Integer.parseInt(numberString);
-        } catch (NumberFormatException exception) {
-          // fall through
+        if (ExpectedRuntime.isInt(numberString)) {
+          return ExpectedRuntime.parseInt(numberString);
         }
 
         try {
@@ -252,11 +251,11 @@ public class JsonParser extends TranspilableClass {
       }
       if (input.startsWith("false", position)) {
         position += 5;
-        return new JsonPrimitive(false);
+        return new JsonBooleanPrimitive(false);
       }
       if (input.startsWith("true", position)) {
         position += 4;
-        return new JsonPrimitive(true);
+        return new JsonBooleanPrimitive(true);
       }
     } catch (Exception e) {
       System.out.println("End of input at " + position);

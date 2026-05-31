@@ -57,7 +57,7 @@ public class JsonObject extends JsonElement {
       jsonElements.set(memberName, (JsonElement) value);
       return;
     }
-    jsonElements.set(memberName, new JsonPrimitive(value));
+    jsonElements.set(memberName, new JsonBooleanPrimitive(value));
   }
 
   public JsonElement getMember(String memberName) {
@@ -66,8 +66,8 @@ public class JsonObject extends JsonElement {
 
   public Boolean getMemberAsBoolean(String memberName) {
     JsonElement jsonElement = jsonElements.get(memberName);
-    if (jsonElement instanceof JsonPrimitive) {
-      JsonPrimitive jsonPrimitive = (JsonPrimitive) jsonElement;
+    if (jsonElement instanceof JsonBooleanPrimitive) {
+      JsonBooleanPrimitive jsonPrimitive = (JsonBooleanPrimitive) jsonElement;
       if (jsonPrimitive.isBoolean()) {
         return jsonPrimitive.getAsBoolean();
       }
@@ -77,8 +77,8 @@ public class JsonObject extends JsonElement {
 
   public Integer getMemberAsInteger(String memberName) {
     JsonElement jsonElement = jsonElements.get(memberName);
-    if (jsonElement instanceof JsonPrimitive) {
-      JsonPrimitive jsonPrimitive = (JsonPrimitive) jsonElement;
+    if (jsonElement instanceof JsonBooleanPrimitive) {
+      JsonBooleanPrimitive jsonPrimitive = (JsonBooleanPrimitive) jsonElement;
       if (jsonPrimitive.isInteger()) {
         return jsonPrimitive.getAsInteger();
       }
@@ -88,8 +88,8 @@ public class JsonObject extends JsonElement {
 
   public Double getMemberAsDouble(String memberName) {
     JsonElement jsonElement = jsonElements.get(memberName);
-    if (jsonElement instanceof JsonPrimitive) {
-      JsonPrimitive jsonPrimitive = (JsonPrimitive) jsonElement;
+    if (jsonElement instanceof JsonBooleanPrimitive) {
+      JsonBooleanPrimitive jsonPrimitive = (JsonBooleanPrimitive) jsonElement;
       if (jsonPrimitive.isDouble()) {
         return jsonPrimitive.getAsDouble();
       }
@@ -99,8 +99,8 @@ public class JsonObject extends JsonElement {
 
   public String getMemberAsString(String memberName) {
     JsonElement jsonElement = jsonElements.get(memberName);
-    if (jsonElement instanceof JsonPrimitive) {
-      JsonPrimitive jsonPrimitive = (JsonPrimitive) jsonElement;
+    if (jsonElement instanceof JsonBooleanPrimitive) {
+      JsonBooleanPrimitive jsonPrimitive = (JsonBooleanPrimitive) jsonElement;
       if (jsonPrimitive.isString()) {
         return jsonPrimitive.getAsString();
       }

@@ -39,7 +39,7 @@ public class JsonArray extends JsonElement {
       jsonElements.add((JsonElement) value);
       return;
     }
-    jsonElements.add(value == null ? new JsonNull() : new JsonPrimitive(value));
+    jsonElements.add(value == null ? new JsonNull() : new JsonBooleanPrimitive(value));
   }
 
   public void set(int index, JsonElement jsonElement) {
