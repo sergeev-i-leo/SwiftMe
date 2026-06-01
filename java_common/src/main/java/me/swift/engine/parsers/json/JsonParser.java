@@ -1,9 +1,7 @@
 package me.swift.engine.parsers.json;
 
 import me.swift.engine.TranspilableClass;
-import me.swift.engine.expected.ExpectedList;
-import me.swift.engine.expected.ExpectedRuntime;
-import me.swift.engine.expected.ExpectedStringBuilder;
+import me.swift.engine.core.*;
 
 public class JsonParser extends TranspilableClass {
 
@@ -93,8 +91,8 @@ public class JsonParser extends TranspilableClass {
       String className = jsonObject0.getAsString("$className");
       if (className != null) {
         JsonObject jsonObject1 = createJsonObjectByClassName(className);
-        ExpectedList<String> keys = jsonObject0.keysExpectedList();
-        for (int i = 0; i < keys.size(); i++) {
+        SwiftArray<String> keys = jsonObject0.keysExpectedList();
+        for (int i = 0; i < keys.count(); i++) {
           String key = keys.get(i);
           jsonObject1.set(key, jsonObject0.get(key));
         }
@@ -192,44 +190,50 @@ public class JsonParser extends TranspilableClass {
   }
 
   private JsonPrimitive parseNumber() {
-    ExpectedStringBuilder expectedStringBuilder = new ExpectedStringBuilder();
+    SwiftStringBuilder swiftStringBuilder = new SwiftStringBuilder();
     try {
       char character = input.charAt(position);
       if (((character >= '0') && (character <= '9')) || (character == '-')) {
-        expectedStringBuilder.appendCharacter(character);
+        swiftStringBuilder.appendCharacter(character);
         position++;
         while (position < input.length()) {
           character = input.charAt(position);
           if (character >= '0' && character <= '9') {
-            expectedStringBuilder.appendCharacter(character);
+            swiftStringBuilder.appendCharacter(character);
             position++;
           } else if (character == '.') {
-            expectedStringBuilder.appendCharacter(character);
+            swiftStringBuilder.appendCharacter(character);
             position++;
           } else if (character == 'e') {
-            expectedStringBuilder.appendCharacter(character);
+            swiftStringBuilder.appendCharacter(character);
             position++;
           } else if (character == 'E') {
-            expectedStringBuilder.appendCharacter(character);
+            swiftStringBuilder.appendCharacter(character);
             position++;
           } else if (character == '+') {
-            expectedStringBuilder.appendCharacter(character);
+            swiftStringBuilder.appendCharacter(character);
             position++;
           } else if (character == '-') {
-            expectedStringBuilder.appendCharacter(character);
+            swiftStringBuilder.appendCharacter(character);
             position++;
           } else {
             break;
           }
         }
-        String numberString = expectedStringBuilder.toString();
+        String numberString = swiftStringBuilder.toString();
 
-        if (ExpectedRuntime.isInt(numberString)) {
-          return new JsonIntegerPrimitive(ExpectedRuntime.parseInt(numberString));
+        OptionalInt optionalInt = SwiftRuntime.parseInt(numberString);
+        if (optionalInt != null) {
+          JsonIntegerPrimitive jsonIntegerPrimitive = new JsonIntegerPrimitive(optionalInt.value);
+          delete(optionalInt);
+          return jsonIntegerPrimitive;
         }
 
-        if (ExpectedRuntime.isDouble(numberString)) {
-          return new JsonDoublePrimitive(ExpectedRuntime.parseDouble(numberString));
+        OptionalDouble optionalDouble = SwiftRuntime.parseDouble(numberString);
+        if (optionalDouble != null) {
+          JsonDoublePrimitive jsonDoublePrimitive = new JsonDoublePrimitive(optionalDouble.value);
+          delete(optionalDouble);
+          return jsonDoublePrimitive;
         }
       } else {
         return null;

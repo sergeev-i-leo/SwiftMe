@@ -1,8 +1,6 @@
-package me.swift.engine.expected;
+package me.swift.engine.core;
 
-import me.swift.engine.TranspilableClass;
-
-public class ExpectedStringBuilder extends TranspilableClass {
+public class SwiftStringBuilder {
 
   private StringBuilder stringBuilder = new StringBuilder();
 

@@ -2,7 +2,7 @@ package me.swift.step_gs;
 
 import me.swift.engine.TranspilableClass;
 import me.swift.step_gs.animations.Animation;
-import me.swift.engine.expected.ExpectedList;
+import me.swift.engine.core.SwiftArray;
 import me.swift.step_gs.painter.Painter;
 
 /**
@@ -20,7 +20,7 @@ public class Page extends TranspilableClass {
   int lastAnimationId = 0;
   Animation firstAnimation = null;
 
-  public ExpectedList<View> views = new ExpectedList<View>();
+  public SwiftArray<View> views = new SwiftArray<View>();
 
   public Page(Device device) {
     this.device = device;
@@ -28,8 +28,8 @@ public class Page extends TranspilableClass {
 
   @Override
   public void destroy() {
-    views.destroyAll();
-    views.destroy();
+    delete(views);
+    views = null;
     super.destroy();
   }
 
@@ -110,7 +110,7 @@ public class Page extends TranspilableClass {
   }
 
   public void paint(Painter painter) {
-    for (int i = 0; i < views.size(); i++) {
+    for (int i = 0; i < views.count(); i++) {
       views.get(i).paint(device, painter, this);
     }
   }
@@ -135,7 +135,7 @@ public class Page extends TranspilableClass {
   }
 
   public void handlePointerDown(float pointedX, float pointedY, int buttonNumber) {
-    for (int i = 0; i < views.size(); i++) {
+    for (int i = 0; i < views.count(); i++) {
       views.get(i).handlePointerDown(device, this, 0f, 0f, pointedX, pointedY, buttonNumber);
     }
   }

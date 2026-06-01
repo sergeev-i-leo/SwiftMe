@@ -28,7 +28,7 @@ class SkiaTestApplication {
   }
 
   init {
-    page.views.add(TestView0())
+    page.views.append(TestView0())
 
     skiaLayer.skikoView = object : SkikoView {
       override fun onRender(canvas: org.jetbrains.skia.Canvas, width: Int, height: Int, nanoTime: Long) {

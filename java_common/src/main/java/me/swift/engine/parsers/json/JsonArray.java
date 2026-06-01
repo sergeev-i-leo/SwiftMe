@@ -1,15 +1,14 @@
 package me.swift.engine.parsers.json;
 
-import me.swift.engine.expected.ExpectedList;
+import me.swift.engine.core.SwiftArray;
 
 public class JsonArray extends JsonElement {
 
-  private ExpectedList<JsonElement> jsonElements = new ExpectedList<>();
+  private SwiftArray<JsonElement> jsonElements = new SwiftArray<>();
 
   @Override
   public void destroy() {
-    jsonElements.destroyAll();
-    jsonElements.destroy();
+    delete(jsonElements);
     jsonElements = null;
     super.destroy();
   }
@@ -28,31 +27,31 @@ public class JsonArray extends JsonElement {
   }
 
   public int size() {
-    return jsonElements.size();
+    return jsonElements.count();
   }
 
   public boolean isEmpty() {
-    return jsonElements.size() == 0;
+    return jsonElements.count() == 0;
   }
 
   public void addBoolean(boolean value) {
-    jsonElements.add(new JsonBooleanPrimitive(value));
+    jsonElements.append(new JsonBooleanPrimitive(value));
   }
 
   public void addInteger(int value) {
-    jsonElements.add(new JsonIntegerPrimitive(value));
+    jsonElements.append(new JsonIntegerPrimitive(value));
   }
 
   public void addDouble(double value) {
-    jsonElements.add(new JsonDoublePrimitive(value));
+    jsonElements.append(new JsonDoublePrimitive(value));
   }
 
   public void addString(String value) {
-    jsonElements.add(new JsonStringPrimitive(value));
+    jsonElements.append(new JsonStringPrimitive(value));
   }
 
   public void add(JsonElement jsonElement) {
-    jsonElements.add(jsonElement);
+    jsonElements.append(jsonElement);
   }
 
   public void set(int index, JsonElement jsonElement) {
@@ -63,7 +62,7 @@ public class JsonArray extends JsonElement {
     return jsonElements.get(index);
   }
 
-  public JsonElement remove(int index) {
-    return jsonElements.removeAt(index);
+  public void remove(int index) {
+    jsonElements.removeAt(index);
   }
 }

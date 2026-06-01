@@ -24,7 +24,7 @@ public class SwingTestApplication extends JPanel {
     setBackground(Color.WHITE);
 
     page = new Page(swingDevice);
-    page.views.add(new TestView0());
+    page.views.append(new TestView0());
 
     addMouseListener(new MouseAdapter() {
       @Override

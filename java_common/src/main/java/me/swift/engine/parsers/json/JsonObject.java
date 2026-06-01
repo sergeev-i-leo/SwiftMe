@@ -1,16 +1,16 @@
 package me.swift.engine.parsers.json;
 
-import me.swift.engine.expected.ExpectedList;
-import me.swift.engine.expected.ExpectedMap;
+import me.swift.engine.core.SwiftArray;
+import me.swift.engine.core.SwiftDictionary;
 
 public class JsonObject extends JsonElement {
 
-  private ExpectedMap<JsonElement> jsonElements = new ExpectedMap<>();
+  private SwiftDictionary<String, JsonElement> jsonElements = new SwiftDictionary<>();
 
   @Override
   public void destroy() {
-    jsonElements.destroyAll();
-    jsonElements.destroy();
+    delete(jsonElements);
+    jsonElements = null;
     super.destroy();
   }
 
@@ -18,8 +18,8 @@ public class JsonObject extends JsonElement {
   public String serialize() {
     StringBuilder text = new StringBuilder("{");
     setString("$className", getClassName());
-    ExpectedList<String> keys = keysExpectedList();
-    for (int i = 0; i < keys.size(); i++) {
+    SwiftArray<String> keys = keysExpectedList();
+    for (int i = 0; i < keys.count(); i++) {
       if (i > 0) {
         text.append(",");
       }
@@ -40,28 +40,28 @@ public class JsonObject extends JsonElement {
   public void deserialize(JsonObject parsedJsonObject) {
   }
 
-  public ExpectedList<String> keysExpectedList() {
+  public SwiftArray<String> keysExpectedList() {
     return jsonElements.keys();
   }
 
   public void setBoolean(String memberName, boolean value) {
-    jsonElements.set(memberName, new JsonBooleanPrimitive(value));
+    jsonElements.put(memberName, new JsonBooleanPrimitive(value));
   }
 
   public void setInt(String memberName, int value) {
-    jsonElements.set(memberName, new JsonIntegerPrimitive(value));
+    jsonElements.put(memberName, new JsonIntegerPrimitive(value));
   }
 
   public void setDouble(String memberName, double value) {
-    jsonElements.set(memberName, new JsonDoublePrimitive(value));
+    jsonElements.put(memberName, new JsonDoublePrimitive(value));
   }
 
   public void setString(String memberName, String value) {
-    jsonElements.set(memberName, new JsonStringPrimitive(value));
+    jsonElements.put(memberName, new JsonStringPrimitive(value));
   }
 
   public void set(String memberName, JsonElement jsonElement) {
-    jsonElements.set(memberName, jsonElement);
+    jsonElements.put(memberName, jsonElement);
   }
 
   public boolean isBoolean(String memberName) {

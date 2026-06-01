@@ -1,6 +1,6 @@
 package me.swift.engine.parsers.json;
 
-import me.swift.engine.expected.ExpectedRuntime;
+import me.swift.engine.core.SwiftRuntime;
 
 public class JsonDoublePrimitive extends JsonPrimitive {
 
@@ -17,7 +17,7 @@ public class JsonDoublePrimitive extends JsonPrimitive {
 
   @Override
   public String serialize() {
-    return ExpectedRuntime.doubleToString(value);
+    return SwiftRuntime.doubleToString(value);
   }
 
   @Override
@@ -32,6 +32,6 @@ public class JsonDoublePrimitive extends JsonPrimitive {
 
   @Override
   public String getAsString() {
-    return ExpectedRuntime.doubleToString(value);
+    return SwiftRuntime.doubleToString(value);
   }
 }
