@@ -14,12 +14,11 @@ public class JsonBooleanPrimitive extends JsonPrimitive {
   }
 
   @Override
-  public boolean isBoolean() {
+  public boolean isJsonBooleanPrimitive() {
     return true;
   }
 
-  @Override
-  public boolean getAsBoolean() {
+  public boolean getValue() {
     return value;
   }
 

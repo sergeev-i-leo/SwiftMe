@@ -11,4 +11,14 @@ public class JsonNull extends JsonElement {
   public String serialize() {
     return "null";
   }
+
+  @Override
+  public boolean isJsonNull() {
+    return true;
+  }
+
+  @Override
+  public String getAsString() {
+    return "null";
+  }
 }

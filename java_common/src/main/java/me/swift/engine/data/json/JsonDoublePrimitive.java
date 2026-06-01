@@ -21,12 +21,11 @@ public class JsonDoublePrimitive extends JsonPrimitive {
   }
 
   @Override
-  public boolean isDouble() {
+  public boolean isJsonDoublePrimitive() {
     return true;
   }
 
-  @Override
-  public double getAsDouble() {
+  public double getValue() {
     return value;
   }
 

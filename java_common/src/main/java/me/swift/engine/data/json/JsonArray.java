@@ -26,6 +26,11 @@ public class JsonArray extends JsonElement {
     return text.toString();
   }
 
+  @Override
+  public boolean isJsonArray() {
+    return true;
+  }
+
   public int size() {
     return jsonElements.count();
   }

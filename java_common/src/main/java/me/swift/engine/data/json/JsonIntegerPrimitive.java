@@ -21,12 +21,11 @@ public class JsonIntegerPrimitive extends JsonPrimitive {
   }
 
   @Override
-  public boolean isInteger() {
+  public boolean isJsonIntegerPrimitive() {
     return true;
   }
 
-  @Override
-  public int getAsInteger() {
+  public int getValue() {
     return value;
   }
 
