@@ -15,7 +15,7 @@ class SkiaTestApplication {
 
   private val skiaLayer = SkiaLayer()
   private val skiaDevice = SkiaDevice(this)
-  private val page = Page(skiaDevice)
+  private val page = Page()
 
   private var scheduler: ScheduledExecutorService? = null
   private var lastTickTime = 0L
@@ -28,6 +28,7 @@ class SkiaTestApplication {
   }
 
   init {
+    page.setDevice(skiaDevice)
     page.views.append(TestView0())
 
     skiaLayer.skikoView = object : SkikoView {
