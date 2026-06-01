@@ -1,9 +1,9 @@
 package me.swift.step_gs;
 
-import me.swift.engine.TranspilableClass;
+import me.swift.engine.parsers.json.JsonObject;
 import me.swift.step_gs.painter.Painter;
 
-public class View extends TranspilableClass {
+public class View extends JsonObject {
 
   @Override
   public void destroy() {

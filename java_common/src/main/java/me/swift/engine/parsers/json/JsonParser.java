@@ -91,7 +91,7 @@ public class JsonParser extends TranspilableClass {
       String className = jsonObject0.getAsString("$className");
       if (className != null) {
         JsonObject jsonObject1 = createJsonObjectByClassName(className);
-        SwiftArray<String> keys = jsonObject0.keysExpectedList();
+        SwiftArray<String> keys = jsonObject0.keys();
         for (int i = 0; i < keys.count(); i++) {
           String key = keys.get(i);
           jsonObject1.set(key, jsonObject0.get(key));

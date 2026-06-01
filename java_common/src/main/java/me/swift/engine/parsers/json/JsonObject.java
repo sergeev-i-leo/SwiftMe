@@ -18,7 +18,7 @@ public class JsonObject extends JsonElement {
   public String serialize() {
     StringBuilder text = new StringBuilder("{");
     setString("$className", getClassName());
-    SwiftArray<String> keys = keysExpectedList();
+    SwiftArray<String> keys = keys();
     for (int i = 0; i < keys.count(); i++) {
       if (i > 0) {
         text.append(",");
@@ -40,7 +40,7 @@ public class JsonObject extends JsonElement {
   public void deserialize(JsonObject parsedJsonObject) {
   }
 
-  public SwiftArray<String> keysExpectedList() {
+  public SwiftArray<String> keys() {
     return jsonElements.keys();
   }
 
