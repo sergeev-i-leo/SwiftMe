@@ -17,7 +17,8 @@ public class JavaDevice extends Device {
       try {
         String content = Files.readString(Paths.get(path), StandardCharsets.UTF_8);
         callback.accept(content);
-      } catch (Exception e) {
+      } catch (Exception exception) {
+        exception.printStackTrace();
         callback.accept(null);
       }
     }).start();
@@ -30,6 +31,7 @@ public class JavaDevice extends Device {
         Files.writeString(Paths.get(path), content, StandardCharsets.UTF_8);
         callback.accept(new OptionalInt(200));
       } catch (Exception exception) {
+        exception.printStackTrace();
         callback.accept(null);
       }
     }).start();

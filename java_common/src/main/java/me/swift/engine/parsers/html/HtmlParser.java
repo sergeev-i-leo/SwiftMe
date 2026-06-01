@@ -85,11 +85,13 @@ public class HtmlParser extends Parser {
       switch (tagName) {
         case "img":
           jsonObject = new JsonObject();
+          jsonObject.setStringMember("tagName", tagName);
           jsonObject.setStringMember("className", "image-view");
           parseHtmlAttributes(jsonObject);
           break;
         case "table":
           jsonObject = new JsonObject();
+          jsonObject.setStringMember("tagName", tagName);
           jsonObject.setStringMember("className", "table-view");
           parseHtmlAttributes(jsonObject);
           break;
@@ -102,55 +104,65 @@ public class HtmlParser extends Parser {
           break;
         case "tr":
           jsonObject = new JsonObject();
+          jsonObject.setStringMember("tagName", tagName);
           jsonObject.setStringMember("className", "table-row-view");
           parseHtmlAttributes(jsonObject);
           break;
         case "th":
           jsonObject = new JsonObject();
+          jsonObject.setStringMember("tagName", tagName);
           stuffCellJsonObject(jsonObject, "table-header-cell-view");
           break;
         case "td":
           jsonObject = new JsonObject();
+          jsonObject.setStringMember("tagName", tagName);
           stuffCellJsonObject(jsonObject, "table-cell-view");
           break;
         case "h1":
           jsonObject = new JsonObject();
+          jsonObject.setStringMember("tagName", tagName);
           jsonObject.setStringMember("className", "typography-h1-view");
           parseHtmlAttributes(jsonObject);
           break;
         case "h2":
           jsonObject = new JsonObject();
+          jsonObject.setStringMember("tagName", tagName);
           jsonObject.setStringMember("className", "typography-h2-view");
           parseHtmlAttributes(jsonObject);
           break;
         case "h3":
           jsonObject = new JsonObject();
+          jsonObject.setStringMember("tagName", tagName);
           jsonObject.setStringMember("className", "typography-h3-view");
           parseHtmlAttributes(jsonObject);
           break;
         case "h4":
           jsonObject = new JsonObject();
+          jsonObject.setStringMember("tagName", tagName);
           jsonObject.setStringMember("className", "typography-h4-view");
           parseHtmlAttributes(jsonObject);
           break;
         case "h5":
           jsonObject = new JsonObject();
+          jsonObject.setStringMember("tagName", tagName);
           jsonObject.setStringMember("className", "typography-h5-view");
           parseHtmlAttributes(jsonObject);
           break;
         case "h6":
           jsonObject = new JsonObject();
+          jsonObject.setStringMember("tagName", tagName);
           jsonObject.setStringMember("className", "typography-h6-view");
           parseHtmlAttributes(jsonObject);
           break;
         case "p":
           jsonObject = new JsonObject();
+          jsonObject.setStringMember("tagName", tagName);
           jsonObject.setStringMember("className", "typography-paragraph-view");
           parseHtmlAttributes(jsonObject);
           break;
         default:
           jsonObject = new JsonObject();
-          jsonObject.setStringMember("className", tagName);
+          jsonObject.setStringMember("tagName", tagName);
           parseHtmlAttributes(jsonObject);
           break;
       }
@@ -162,7 +174,7 @@ public class HtmlParser extends Parser {
       } else if (tagName.equals("img")) {
         // self-closing
         consumeCharacter();
-      } else {
+      } else if (jsonObject != null) {
         consumeCharacter();
         // add children
         JsonArray viewsJsonArray = new JsonArray();
@@ -174,10 +186,12 @@ public class HtmlParser extends Parser {
 
       delete(tagName);
 
-      if (parentJsonArray != null) {
-        parentJsonArray.addElement(jsonObject);
-      } else {
-        jsonArray.addElement(jsonObject);
+      if (jsonObject != null) {
+        if (parentJsonArray != null) {
+          parentJsonArray.addElement(jsonObject);
+        } else {
+          jsonArray.addElement(jsonObject);
+        }
       }
     }
     if (parentJsonArray != null) {
@@ -470,3 +484,38 @@ public class HtmlParser extends Parser {
 
   }
 }
+/*
+  public void buildHtmlTextBlock(Block block) {
+
+    ExpectedList<HtmlLetterBlock> letterBlocks = new ExpectedList<>();
+
+    accumulateHtmlLetters(block, letterBlocks);
+
+    if (letterBlocks.isEmpty()) {
+      return;
+    }
+
+    HtmlTextBlock textBlock;
+    if (block instanceof HtmlTextBlock) {
+      textBlock = (HtmlTextBlock) block;
+      block.blocks.clear();
+    } else {
+      // let it be paragraph
+      textBlock = new HtmlTextBlock();
+      block.blocks.clear();
+      block.addBlock(textBlock);
+    }
+
+    textBlock.build(letterBlocks);
+  }
+
+  private void accumulateHtmlLetters(Block block, ExpectedList<HtmlLetterBlock> htmlLetterBlocks) {
+    if (block instanceof HtmlLetterBlock) {
+      htmlLetterBlocks.add((HtmlLetterBlock) block);
+      return;
+    }
+    for (int i = 0; i < block.blocks.size(); i++) {
+      accumulateHtmlLetters(block.blocks.get(i), htmlLetterBlocks);
+    }
+  }
+*/

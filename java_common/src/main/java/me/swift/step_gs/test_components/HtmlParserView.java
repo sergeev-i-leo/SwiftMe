@@ -10,6 +10,7 @@ import me.swift.step_gs.painter.Painter;
 public class HtmlParserView extends View {
 
   private int state = 0;
+  private JsonArray jsonArray = null;
 
   @Override
   public void paint(Device device, Painter painter, Page page) {
@@ -44,7 +45,7 @@ public class HtmlParserView extends View {
       device.readFile("html-0.html", result -> {
         if (result != null) {
           HtmlParser htmlParser = new HtmlParser();
-          JsonArray jsonArray = htmlParser.parse(result);
+          jsonArray = htmlParser.parse(result);
           delete(htmlParser);
           delete(jsonArray);
           state = 200;
@@ -55,16 +56,19 @@ public class HtmlParserView extends View {
       });
     }
     if (state == 200) {
-      state = 2;
-      page.requestRepainting();
-      device.writeFile("html-0.tmp", "Hello World", optionalInt -> {
-        if ((optionalInt != null) && (optionalInt.value == 200)) {
-          state = 0;
-        } else {
-          state = 404;
-        }
+      if (jsonArray != null) {
+        state = 2;
         page.requestRepainting();
-      });
+        String string = jsonArray.serialize();
+        device.writeFile("html-0.tmp", string, optionalInt -> {
+          if ((optionalInt != null) && (optionalInt.value == 200)) {
+            state = 0;
+          } else {
+            state = 404;
+          }
+          page.requestRepainting();
+        });
+      }
     }
   }
 }
