@@ -16,17 +16,25 @@ public class HtmlParser extends Parser {
 
     position = 0;
 
-    return parseViews(null, null);
+    JsonArray jsonArray = new JsonArray();
+    parseHtmlNodes(jsonArray);
+
+    return jsonArray;
   }
 
-  public JsonArray parseViews(JsonArray parentJsonArray, String parentTagName) {
+  public void parseHtmlNodes(JsonArray jsonArray) {
 
-    JsonArray jsonArray = new JsonArray();
     while (true) {
 
-      if (position >= input.length()) {
-        break;
+      while ((position < input.length()) && (peekCharacter() != '<')) {
+        consumeCharacter();
       }
+
+      if (position >= input.length()) {
+        return;
+      }
+
+      JsonObject jsonObject = parseHtmlNode(parentTagName)
 
       if (peekCharacter() != '<') {
         // collect text nodes
@@ -59,7 +67,6 @@ public class HtmlParser extends Parser {
 
       consumeCharacter();
 
-      String tagName = parseTagName();
       if (tagName.equals("span")) {
         delete(tagName);
 
@@ -81,105 +88,18 @@ public class HtmlParser extends Parser {
         consumeCharacter();
         continue;
       }
-      JsonObject jsonObject = null;
-      switch (tagName) {
-        case "img":
-          jsonObject = new JsonObject();
-          jsonObject.setStringMember("tagName", tagName);
-          jsonObject.setStringMember("className", "image-view");
-          parseHtmlAttributes(jsonObject);
-          break;
-        case "table":
-          jsonObject = new JsonObject();
-          jsonObject.setStringMember("tagName", tagName);
-          jsonObject.setStringMember("className", "table-view");
-          parseHtmlAttributes(jsonObject);
-          break;
-        case "tbody":
-          if (parentJsonArray != null) {
-            parseViews(parentJsonArray, tagName);
-          } else {
-            parseViews(jsonArray, tagName);
-          }
-          break;
-        case "tr":
-          jsonObject = new JsonObject();
-          jsonObject.setStringMember("tagName", tagName);
-          jsonObject.setStringMember("className", "table-row-view");
-          parseHtmlAttributes(jsonObject);
-          break;
-        case "th":
-          jsonObject = new JsonObject();
-          jsonObject.setStringMember("tagName", tagName);
-          stuffCellJsonObject(jsonObject, "table-header-cell-view");
-          break;
-        case "td":
-          jsonObject = new JsonObject();
-          jsonObject.setStringMember("tagName", tagName);
-          stuffCellJsonObject(jsonObject, "table-cell-view");
-          break;
-        case "h1":
-          jsonObject = new JsonObject();
-          jsonObject.setStringMember("tagName", tagName);
-          jsonObject.setStringMember("className", "typography-h1-view");
-          parseHtmlAttributes(jsonObject);
-          break;
-        case "h2":
-          jsonObject = new JsonObject();
-          jsonObject.setStringMember("tagName", tagName);
-          jsonObject.setStringMember("className", "typography-h2-view");
-          parseHtmlAttributes(jsonObject);
-          break;
-        case "h3":
-          jsonObject = new JsonObject();
-          jsonObject.setStringMember("tagName", tagName);
-          jsonObject.setStringMember("className", "typography-h3-view");
-          parseHtmlAttributes(jsonObject);
-          break;
-        case "h4":
-          jsonObject = new JsonObject();
-          jsonObject.setStringMember("tagName", tagName);
-          jsonObject.setStringMember("className", "typography-h4-view");
-          parseHtmlAttributes(jsonObject);
-          break;
-        case "h5":
-          jsonObject = new JsonObject();
-          jsonObject.setStringMember("tagName", tagName);
-          jsonObject.setStringMember("className", "typography-h5-view");
-          parseHtmlAttributes(jsonObject);
-          break;
-        case "h6":
-          jsonObject = new JsonObject();
-          jsonObject.setStringMember("tagName", tagName);
-          jsonObject.setStringMember("className", "typography-h6-view");
-          parseHtmlAttributes(jsonObject);
-          break;
-        case "p":
-          jsonObject = new JsonObject();
-          jsonObject.setStringMember("tagName", tagName);
-          jsonObject.setStringMember("className", "typography-paragraph-view");
-          parseHtmlAttributes(jsonObject);
-          break;
-        default:
-          jsonObject = new JsonObject();
-          jsonObject.setStringMember("tagName", tagName);
-          parseHtmlAttributes(jsonObject);
-          break;
-      }
 
       if ((peekCharacter() == '/') && (peekNextCharacter(1) == '>')) {
         // self-closing
         consumeCharacter();
         consumeCharacter();
       } else if (tagName.equals("img")) {
-        // self-closing
-        consumeCharacter();
       } else if (jsonObject != null) {
         consumeCharacter();
         // add children
         JsonArray viewsJsonArray = new JsonArray();
         jsonObject.setMember("views", viewsJsonArray);
-        parseViews(viewsJsonArray, tagName);
+        parseHtmlNodes(viewsJsonArray, tagName);
         // children may be text
         convertToTextView(jsonObject);
       }
@@ -201,6 +121,96 @@ public class HtmlParser extends Parser {
     return jsonArray;
   }
 
+  public JsonObject parseHtmlNode(String parentTagName) {
+    if (consumeCharacter() != '<') {
+      return null;
+    }
+    String tagName = parseTagName();
+    JsonObject jsonObject;
+    switch (tagName) {
+      case "img":
+        jsonObject = new JsonObject();
+        jsonObject.setStringMember("tagName", tagName);
+        jsonObject.setStringMember("className", "image-view");
+        parseHtmlAttributes(jsonObject);
+        // self-closing
+        consumeCharacter();
+        return jsonObject;
+      case "table":
+        jsonObject = new JsonObject();
+        jsonObject.setStringMember("tagName", tagName);
+        jsonObject.setStringMember("className", "table-view");
+        parseHtmlAttributes(jsonObject);
+        break;
+      case "tbody":
+        break;
+      case "tr":
+        jsonObject = new JsonObject();
+        jsonObject.setStringMember("tagName", tagName);
+        jsonObject.setStringMember("className", "table-row-view");
+        parseHtmlAttributes(jsonObject);
+        break;
+      case "th":
+        jsonObject = new JsonObject();
+        jsonObject.setStringMember("tagName", tagName);
+        stuffCellJsonObject(jsonObject, "table-header-cell-view");
+        break;
+      case "td":
+        jsonObject = new JsonObject();
+        jsonObject.setStringMember("tagName", tagName);
+        stuffCellJsonObject(jsonObject, "table-cell-view");
+        break;
+      case "h1":
+        jsonObject = new JsonObject();
+        jsonObject.setStringMember("tagName", tagName);
+        jsonObject.setStringMember("className", "typography-h1-view");
+        parseHtmlAttributes(jsonObject);
+        break;
+      case "h2":
+        jsonObject = new JsonObject();
+        jsonObject.setStringMember("tagName", tagName);
+        jsonObject.setStringMember("className", "typography-h2-view");
+        parseHtmlAttributes(jsonObject);
+        break;
+      case "h3":
+        jsonObject = new JsonObject();
+        jsonObject.setStringMember("tagName", tagName);
+        jsonObject.setStringMember("className", "typography-h3-view");
+        parseHtmlAttributes(jsonObject);
+        break;
+      case "h4":
+        jsonObject = new JsonObject();
+        jsonObject.setStringMember("tagName", tagName);
+        jsonObject.setStringMember("className", "typography-h4-view");
+        parseHtmlAttributes(jsonObject);
+        break;
+      case "h5":
+        jsonObject = new JsonObject();
+        jsonObject.setStringMember("tagName", tagName);
+        jsonObject.setStringMember("className", "typography-h5-view");
+        parseHtmlAttributes(jsonObject);
+        break;
+      case "h6":
+        jsonObject = new JsonObject();
+        jsonObject.setStringMember("tagName", tagName);
+        jsonObject.setStringMember("className", "typography-h6-view");
+        parseHtmlAttributes(jsonObject);
+        break;
+      case "p":
+        jsonObject = new JsonObject();
+        jsonObject.setStringMember("tagName", tagName);
+        jsonObject.setStringMember("className", "typography-paragraph-view");
+        parseHtmlAttributes(jsonObject);
+        break;
+      default:
+        jsonObject = new JsonObject();
+        jsonObject.setStringMember("tagName", tagName);
+        parseHtmlAttributes(jsonObject);
+        break;
+    }
+
+  }
+
   private String parseTagName() {
     SwiftStringBuilder swiftStringBuilder = new SwiftStringBuilder();
     while ((position < input.length()) && (Character.isLetterOrDigit(peekCharacter()))) {
@@ -210,6 +220,10 @@ public class HtmlParser extends Parser {
     String string = swiftStringBuilder.getLowerCaseString();
     delete(swiftStringBuilder);
     return string;
+  }
+
+  private JsonObject parseTextNodeContent(JsonArray parentJsonArray, String parentTagName) {
+
   }
 
   private void stuffCellJsonObject(JsonObject cellJsonObject, String className) {
