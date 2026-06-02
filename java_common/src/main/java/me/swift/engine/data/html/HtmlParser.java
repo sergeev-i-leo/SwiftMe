@@ -152,9 +152,9 @@ public class HtmlParser extends Parser {
     JsonArray styleJsonArray = new JsonArray();
     jsonObject.setMember("style", styleJsonArray);
 
-    skipWhitespaces();
-
     while ((position < input.length()) && (peekCharacter() != '>') && (peekCharacter() != '/')) {
+
+      skipWhitespaces();
 
       // attribute name
 
@@ -174,6 +174,7 @@ public class HtmlParser extends Parser {
       skipCharacters(1);
 
       parseAttributeValue(attributeName, attributesJsonArray, styleJsonArray);
+      delete(attributeName);
     }
   }
 
@@ -199,10 +200,25 @@ public class HtmlParser extends Parser {
   private void parseAttributeValue(String attributeName, JsonArray attributesJsonArray, JsonArray styleJsonArray) {
     skipWhitespaces();
 
-    char attributeValueDelimiter = consumeCharacter();
+    char attributeValueDelimiter = peekCharacter();
     if ((attributeValueDelimiter != '\"') && (attributeValueDelimiter != '\'')) {
+      StringBuffer stringBuffer = new StringBuffer();
+      while (position < input.length()) {
+        char c = peekCharacter();
+        if (!isAttributeValueCharacter(c)) {
+          break;
+        }
+        stringBuffer.appendCharacter(consumeCharacter());
+      }
+      JsonObject attributeJsonObject = new JsonObject();
+      attributesJsonArray.appendElement(attributeJsonObject);
+      attributeJsonObject.setStringMember(attributeName, stringBuffer.toString());
+
+      delete(stringBuffer);
       return;
     }
+
+    skipCharacters(1);
 
     if (!attributeName.equals("style")) {
       StringBuffer stringBuffer = new StringBuffer();
@@ -231,12 +247,15 @@ public class HtmlParser extends Parser {
       attributesJsonArray.appendElement(attributeJsonObject);
       attributeJsonObject.setStringMember(attributeName, stringBuffer.toString());
 
-      delete(attributeName);
       delete(stringBuffer);
       return;
     }
 
     while (position < input.length()) {
+      if (peekCharacter() == attributeValueDelimiter) {
+        break;
+      }
+
       String styleName = parseStyleName();
       if (styleName == null) {
         return;
@@ -250,16 +269,16 @@ public class HtmlParser extends Parser {
 
       skipWhitespaces();
       StringBuffer styleStringBuffer = parseStyleValue();
-      if (styleValue == null) {
+      if (styleStringBuffer == null) {
         delete(styleName);
         break;
       }
       JsonObject styleJsonObject = new JsonObject();
-      attributesJsonArray.appendElement(styleJsonObject);
-      styleJsonObject.setStringMember(styleName, styleValue);
+      styleJsonArray.appendElement(styleJsonObject);
+      styleJsonObject.setStringMember(styleName, styleStringBuffer.getString());
 
       delete(styleName);
-      delete(styleValue);
+      delete(styleStringBuffer);
 
       skipWhitespaces();
       if (peekCharacter() != ';') {
@@ -293,19 +312,46 @@ public class HtmlParser extends Parser {
     skipWhitespaces();
 
     StringBuffer stringBuffer = new StringBuffer();
+    boolean insideQuotes = false;
+    char quoteCharacter = 0;
+
     while (position < input.length()) {
       char c = peekCharacter();
+
       if (c == '\\') {
         skipCharacters(1);
         c = consumeCharacter();
         stringBuffer.appendCharacter(c);
         continue;
       }
+
+      // quotes
+      if (((c == '"') || (c == '\'')) && (!insideQuotes)) {
+        insideQuotes = true;
+        quoteCharacter = c;
+        stringBuffer.appendCharacter(consumeCharacter());
+        continue;
+      }
+      if ((insideQuotes) && (c == quoteCharacter)) {
+        insideQuotes = false;
+        quoteCharacter = 0;
+        stringBuffer.appendCharacter(consumeCharacter());
+        continue;
+      }
+
+      // inside quotes
+      if (insideQuotes) {
+        stringBuffer.appendCharacter(consumeCharacter());
+        continue;
+      }
+
+      // outside quotes
       if (!isAttributeValueCharacter(c)) {
         break;
       }
-      stringBuffer.appendCharacter(c);
+      stringBuffer.appendCharacter(consumeCharacter());
     }
+
     if (stringBuffer.isEmpty()) {
       delete(stringBuffer);
       return null;
@@ -313,7 +359,6 @@ public class HtmlParser extends Parser {
 
     return stringBuffer;
   }
-
 
   private void parseTextContents(JsonArray jsonArray) {
 
