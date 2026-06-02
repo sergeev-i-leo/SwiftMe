@@ -16,7 +16,7 @@ public class JsonArray extends JsonElement {
   @Override
   public String serialize() {
     StringBuilder text = new StringBuilder("[");
-    for (int i = 0; i < size(); i++) {
+    for (int i = 0; i < count(); i++) {
       if (i > 0) {
         text.append(",");
       }
@@ -36,7 +36,7 @@ public class JsonArray extends JsonElement {
     return this;
   }
 
-  public int size() {
+  public int count() {
     return jsonElements.count();
   }
 

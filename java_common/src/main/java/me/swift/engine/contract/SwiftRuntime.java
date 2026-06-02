@@ -13,6 +13,20 @@ public class SwiftRuntime {
     }
   }
 
+  public static OptionalInt parseHexInt(String input) {
+    if (input == null) {
+      return null;
+    }
+    if ((input.startsWith("x")) || (input.startsWith("X"))) {
+      input = input.substring(1);
+    }
+    try {
+      return new OptionalInt(Integer.parseInt(input, 16));
+    } catch (NumberFormatException e) {
+      return null;
+    }
+  }
+
   public static OptionalDouble parseDouble(String input) {
     if (input == null) {
       return null;
