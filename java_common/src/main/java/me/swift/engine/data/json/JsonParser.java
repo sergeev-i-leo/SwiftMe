@@ -223,17 +223,17 @@ public class JsonParser extends TranspilableClass {
         }
         String numberString = stringBuffer.toString();
 
-        OptionalInt optionalInt = SwiftRuntime.parseInt(numberString);
-        if (optionalInt != null) {
-          JsonIntegerPrimitive jsonIntegerPrimitive = new JsonIntegerPrimitive(optionalInt.value);
-          delete(optionalInt);
+        Integer parsedInteger = SwiftRuntime.parseInt(numberString);
+        if (parsedInteger != null) {
+          JsonIntegerPrimitive jsonIntegerPrimitive = new JsonIntegerPrimitive(parsedInteger);
+          delete(parsedInteger);
           return jsonIntegerPrimitive;
         }
 
-        OptionalDouble optionalDouble = SwiftRuntime.parseDouble(numberString);
-        if (optionalDouble != null) {
-          JsonDoublePrimitive jsonDoublePrimitive = new JsonDoublePrimitive(optionalDouble.value);
-          delete(optionalDouble);
+        Double parsedDouble = SwiftRuntime.parseDouble(numberString);
+        if (parsedDouble != null) {
+          JsonDoublePrimitive jsonDoublePrimitive = new JsonDoublePrimitive(parsedDouble);
+          delete(parsedDouble);
           return jsonDoublePrimitive;
         }
       } else {

@@ -11,7 +11,7 @@ public class Device {
   public void readFile(String path, StringConsumer callback) {
   }
 
-  public void writeFile(String path, String content, OptionalIntConsumer callback) {
+  public void writeFile(String path, String content, IntegerConsumer callback) {
   }
 
   public void startRepainting(Page page) {

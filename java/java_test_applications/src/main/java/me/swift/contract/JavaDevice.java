@@ -4,9 +4,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import me.swift.engine.contract.OptionalInt;
 import me.swift.step_gs.contract.Device;
-import me.swift.step_gs.contract.OptionalIntConsumer;
+import me.swift.step_gs.contract.IntegerConsumer;
 import me.swift.step_gs.contract.StringConsumer;
 
 public class JavaDevice extends Device {
@@ -25,11 +24,11 @@ public class JavaDevice extends Device {
   }
 
   @Override
-  public void writeFile(String path, String content, OptionalIntConsumer callback) {
+  public void writeFile(String path, String content, IntegerConsumer callback) {
     new Thread(() -> {
       try {
         Files.writeString(Paths.get(path), content, StandardCharsets.UTF_8);
-        callback.accept(new OptionalInt(200));
+        callback.accept(200);
       } catch (Exception exception) {
         exception.printStackTrace();
         callback.accept(null);

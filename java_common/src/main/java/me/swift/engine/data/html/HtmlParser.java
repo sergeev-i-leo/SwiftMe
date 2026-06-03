@@ -1,6 +1,5 @@
 package me.swift.engine.data.html;
 
-import me.swift.engine.contract.OptionalInt;
 import me.swift.engine.contract.SwiftRuntime;
 import me.swift.engine.contract.StringBuffer;
 import me.swift.engine.data.Parser;
@@ -410,11 +409,11 @@ public class HtmlParser extends Parser {
         c = peekCharacter();
         if (c == ';') {
           // try to convert to char
-          OptionalInt optionalInt = SwiftRuntime.parseHexInt(htmlLetterStringBuffer.getString());
-          if (optionalInt == null) {
+          Integer parsedInteger = SwiftRuntime.parseHexInt(htmlLetterStringBuffer.getString());
+          if (parsedInteger == null) {
             textStringBuffer.appendString(htmlLetterStringBuffer.getString());
           } else {
-            textStringBuffer.appendCharacter((char) optionalInt.value);
+            textStringBuffer.appendCharacter((char) parsedInteger.intValue());
           }
           delete(htmlLetterStringBuffer);
           htmlLetterStringBuffer = null;

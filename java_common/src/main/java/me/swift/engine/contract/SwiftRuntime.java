@@ -2,18 +2,18 @@ package me.swift.engine.contract;
 
 public class SwiftRuntime {
 
-  public static OptionalInt parseInt(String input) {
+  public static Integer parseInt(String input) {
     if (input == null) {
       return null;
     }
     try {
-      return new OptionalInt(Integer.parseInt(input));
-    } catch (NumberFormatException e) {
+      return Integer.parseInt(input);
+    } catch (NumberFormatException exception) {
       return null;
     }
   }
 
-  public static OptionalInt parseHexInt(String input) {
+  public static Integer parseHexInt(String input) {
     if (input == null) {
       return null;
     }
@@ -21,19 +21,19 @@ public class SwiftRuntime {
       input = input.substring(1);
     }
     try {
-      return new OptionalInt(Integer.parseInt(input, 16));
-    } catch (NumberFormatException e) {
+      return Integer.parseInt(input, 16);
+    } catch (NumberFormatException exception) {
       return null;
     }
   }
 
-  public static OptionalDouble parseDouble(String input) {
+  public static Double parseDouble(String input) {
     if (input == null) {
       return null;
     }
     try {
-      return new OptionalDouble(Double.parseDouble(input));
-    } catch (NumberFormatException e) {
+      return Double.parseDouble(input);
+    } catch (NumberFormatException exception) {
       return null;
     }
   }
