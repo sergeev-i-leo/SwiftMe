@@ -1,22 +1,24 @@
 <!DOCTYPE html>
 <html>
-<!-- printingLevel = 1 -->
+<!-- debuggingLevel = 1 -->
 <head>
     <title>Test Page for Parser</title>
     <meta charset="UTF-8">
     <meta name="description" content="Testing HTML parser">
     <meta name="keywords" content="parser,html,test">
 </head>
-<!-- printingLevel = 0 -->
 <body>
+<!-- debuggingLevel = 1 -->
     <h1>Heading Level 1</h1>
     <h2>Heading Level 2 with <span>inline span</span> inside</h2>
 
     <p>This is a paragraph with <strong>strong text</strong> and <em>emphasized text</em>.</p>
 
+<!-- debuggingLevel = 2 -->
     <div class="container" id="main" data-role="wrapper">
         <p>First paragraph inside div</p>
         <p>Second paragraph with <a href="https://example.com">a link to example.com</a> and <br> line break.</p>
+<!-- debuggingLevel = 1 -->
         
         <ul>
             <li>Unordered list item 1</li>

@@ -10,6 +10,9 @@ import me.swift.engine.data.json.JsonStringPrimitive;
 
 public class HtmlParser extends Parser {
 
+  // 0 for nothing, 1 for nothing with input checking, 2 for debugging
+  public int debuggingLevel = 0;
+
   public JsonArray parse(String input) {
     if (input != null) {
       this.input = input;
@@ -26,20 +29,15 @@ public class HtmlParser extends Parser {
   private void parseHtmlNodeContents(String tagName, JsonArray jsonArray) {
 
     while (true) {
-      parseTextContents(jsonArray);
 
       while ((peekCharacter() == '<') && (peekNextCharacter(1) == '!')) {
-        if (peekString("<!-- printingLevel = 0")) {
-          printingLevel = 0;
-        } else if (peekString("<!-- printingLevel = 1")) {
-          printingLevel = 1;
-        } else if (peekString("<!-- printingLevel = 2")) {
-          printingLevel = 2;
-        }
         appendTextJsonObject(jsonArray, "<!");
         parseTextContents(jsonArray);
         skipWhitespaces();
       }
+
+      // can be part of inline element <span>, <strong>, <em>
+      parseTextContents(jsonArray);
 
       if (position >= input.length()) {
         // html is broken
@@ -61,7 +59,7 @@ public class HtmlParser extends Parser {
           skipCharacters(1);
         }
 
-        if (printingLevel > 0) {
+        if (debuggingLevel > 1) {
           System.out.println("</" + closingTagName + ">");
         }
 
@@ -73,6 +71,9 @@ public class HtmlParser extends Parser {
           return;
         }
       }
+
+      skipWhitespaces();
+
       int storedPosition = position;
       parseHtmlNode(jsonArray);
       if (storedPosition == position) {
@@ -83,8 +84,6 @@ public class HtmlParser extends Parser {
   }
 
   public void parseHtmlNode(JsonArray jsonArray) {
-    skipWhitespaces();
-
     if (consumeCharacter() != '<') {
       // oops, goodbye cycling
       skipCharacters(1);
@@ -93,7 +92,7 @@ public class HtmlParser extends Parser {
 
     String tagName = parseTagName();
 
-    if (printingLevel > 0) {
+    if (debuggingLevel > 1) {
       System.out.println("<" + tagName + ">");
     }
 
@@ -153,6 +152,7 @@ public class HtmlParser extends Parser {
 
     jsonArray = new JsonArray();
     jsonObject.setMember("contents", jsonArray);
+    skipWhitespaces();
     parseHtmlNodeContents(tagName, jsonArray);
   }
 
@@ -189,7 +189,7 @@ public class HtmlParser extends Parser {
 
       if (peekCharacter() != '=') {
         attributesJsonArray.appendElement(new JsonStringPrimitive(attributeName));
-        if (printingLevel > 0) {
+        if (debuggingLevel > 1) {
           System.out.println("boolean attribute found " + attributeName);
         }
         delete(attributeName);
@@ -239,7 +239,7 @@ public class HtmlParser extends Parser {
       attributesJsonArray.appendElement(attributeJsonObject);
       attributeJsonObject.setStringMember(attributeName, stringBuffer.toString());
 
-      if (printingLevel > 0) {
+      if (debuggingLevel > 1) {
         System.out.println("unquoted attribute found " + attributeName + " : " + stringBuffer.getString());
       }
 
@@ -277,7 +277,7 @@ public class HtmlParser extends Parser {
       attributesJsonArray.appendElement(attributeJsonObject);
       attributeJsonObject.setStringMember(attributeName, stringBuffer.toString());
 
-      if (printingLevel > 0) {
+      if (debuggingLevel > 1) {
         System.out.println("quoted attribute found " + attributeName + " : " + stringBuffer.getString());
       }
 
@@ -311,7 +311,7 @@ public class HtmlParser extends Parser {
       styleJsonArray.appendElement(styleJsonObject);
       styleJsonObject.setStringMember(styleName, stringBuffer.getString());
 
-      if (printingLevel > 0) {
+      if (debuggingLevel > 1) {
         System.out.println("style found " + styleName + " : " + stringBuffer.getString());
       }
 
@@ -597,7 +597,7 @@ public class HtmlParser extends Parser {
     }
 
     if (textStringBuffer.isNotEmpty()) {
-      if (printingLevel > 0) {
+      if (debuggingLevel > 1) {
         System.out.println("text found " + textStringBuffer.getString());
       }
       appendTextJsonObject(jsonArray, textStringBuffer.getString());
@@ -610,6 +610,20 @@ public class HtmlParser extends Parser {
     jsonArray.appendElement(jsonObject);
     jsonObject.setStringMember("tagName", "#text");
     jsonObject.setStringMember("value", text);
+  }
+
+  @Override
+  public char peekCharacter() {
+    if (debuggingLevel > 0) {
+      if (peekString("<!-- debuggingLevel = 0")) {
+        debuggingLevel = 0;
+      } else if (peekString("<!-- debuggingLevel = 1")) {
+        debuggingLevel = 1;
+      } else if (peekString("<!-- debuggingLevel = 2")) {
+        debuggingLevel = 2;
+      }
+    }
+    return super.peekCharacter();
   }
 
   public void toStringBuffer(JsonArray jsonArray, StringBuffer stringBuffer) {

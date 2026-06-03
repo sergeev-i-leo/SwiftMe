@@ -48,6 +48,8 @@ public class HtmlParserView extends View {
       device.readFile("test.html", result -> {
         if (result != null) {
           HtmlParser htmlParser = new HtmlParser();
+          // look for debugging level in input
+          htmlParser.debuggingLevel = 1;
           jsonArray = htmlParser.parse(result);
           delete(htmlParser);
           StringBuffer stringBuffer = new StringBuffer();
