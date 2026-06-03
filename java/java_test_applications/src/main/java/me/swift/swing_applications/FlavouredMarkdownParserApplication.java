@@ -1,15 +1,15 @@
 package me.swift.swing_applications;
 
 import me.swift.step_gs.Page;
-import me.swift.step_gs.test_components.ObsidianParserView;
+import me.swift.step_gs.test_components.FlavouredMarkdownParserView;
 
 import javax.swing.*;
 
-public class ObsidianParserApplication {
+public class FlavouredMarkdownParserApplication {
 
   public static void main(String[] args) {
     Page page = new Page();
-    page.views.append(new ObsidianParserView());
+    page.views.append(new FlavouredMarkdownParserView());
 
     JFrame frame = new JFrame("SwingTestApplication");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

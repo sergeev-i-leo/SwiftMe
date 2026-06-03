@@ -5,7 +5,7 @@ import me.swift.step_gs.View;
 import me.swift.step_gs.contract.Device;
 import me.swift.step_gs.painter.Painter;
 
-public class ObsidianParserView extends View {
+public class FlavouredMarkdownParserView extends View {
 
   private int state = 0;
 
@@ -51,8 +51,8 @@ public class ObsidianParserView extends View {
     if (state == 200) {
       state = 2;
       page.requestRepainting();
-      device.writeFile("obsidian-0.tmp", "Hello World", optionalInt -> {
-        if ((optionalInt != null) && (optionalInt.value == 200)) {
+      device.writeFile("obsidian-0.tmp", "Hello World", operationResult -> {
+        if ((operationResult != null) && (operationResult == 200)) {
           state = 0;
         } else {
           state = 404;

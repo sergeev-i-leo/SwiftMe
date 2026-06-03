@@ -56,8 +56,8 @@ public class HtmlParserView extends View {
           htmlParser.toStringBuffer(jsonArray,stringBuffer);
           htmlOutput = stringBuffer.getString();
           delete(stringBuffer);
-          device.writeFile("test-output.html", htmlOutput, optionalInt -> {
-            if ((optionalInt != null) && (optionalInt.value == 200)) {
+          device.writeFile("test-output.html", htmlOutput, operationResult -> {
+            if ((operationResult != null) && (operationResult == 200)) {
               state = 200;
             } else {
               state = 404;
@@ -75,8 +75,8 @@ public class HtmlParserView extends View {
         state = 2;
         page.requestRepainting();
         String string = jsonArray.serialize();
-        device.writeFile("html-0.tmp", string, optionalInt -> {
-          if ((optionalInt != null) && (optionalInt.value == 200)) {
+        device.writeFile("html-0.tmp", string, operationResult -> {
+          if ((operationResult != null) && (operationResult == 200)) {
             state = 0;
           } else {
             state = 404;
