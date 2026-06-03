@@ -10,8 +10,6 @@ import me.swift.engine.data.json.JsonStringPrimitive;
 
 public class HtmlParser extends Parser {
 
-  boolean printlnIt = true;
-
   public JsonArray parse(String input) {
     if (input != null) {
       this.input = input;
@@ -50,6 +48,8 @@ public class HtmlParser extends Parser {
     }
 
     if (consumeCharacter() != '<') {
+      // oops, goodbye cycling
+      skipCharacters(1);
       return;
     }
 
@@ -101,7 +101,7 @@ public class HtmlParser extends Parser {
       char c = consumeCharacter();
       stringBuffer.appendCharacter(c);
     }
-    if (printlnIt) {
+    if (printlnIt > 0) {
       System.out.println("tag name found " + stringBuffer.getLowerCaseString());
     }
     String string = stringBuffer.getLowerCaseString();
@@ -124,12 +124,9 @@ public class HtmlParser extends Parser {
         return;
       }
 
-      // skip '<'
-      skipCharacters(1);
-
-      if (peekCharacter() == '/') {
+      if (peekNextCharacter(1) == '/') {
         // closing tag
-        skipCharacters(1);
+        skipCharacters(2);
         String closingTagName = parseTagName();
         if ((position < input.length()) && (peekCharacter() == '>')) {
           skipCharacters(1);
@@ -169,7 +166,7 @@ public class HtmlParser extends Parser {
 
       if (peekCharacter() != '=') {
         attributesJsonArray.appendElement(new JsonStringPrimitive(attributeName));
-        if (printlnIt) {
+        if (printlnIt > 0) {
           System.out.println("boolean attribute found " + attributeName);
         }
         delete(attributeName);
@@ -219,8 +216,8 @@ public class HtmlParser extends Parser {
       attributesJsonArray.appendElement(attributeJsonObject);
       attributeJsonObject.setStringMember(attributeName, stringBuffer.toString());
 
-      if (printlnIt) {
-        System.out.println("attribute found " + attributeName + " : " + stringBuffer.getString());
+      if (printlnIt > 0) {
+        System.out.println("unquoted attribute found " + attributeName + " : " + stringBuffer.getString());
       }
 
       delete(stringBuffer);
@@ -243,10 +240,11 @@ public class HtmlParser extends Parser {
           skipCharacters(1);
           break;
         }
-        if (!isAttributeValueCharacter(c)) {
+        if ((c == '>') || (c == '/')) {
           break;
         }
         stringBuffer.appendCharacter(c);
+        skipCharacters(1);
       }
       if (stringBuffer.isEmpty()) {
         delete(stringBuffer);
@@ -255,6 +253,10 @@ public class HtmlParser extends Parser {
       JsonObject attributeJsonObject = new JsonObject();
       attributesJsonArray.appendElement(attributeJsonObject);
       attributeJsonObject.setStringMember(attributeName, stringBuffer.toString());
+
+      if (printlnIt > 0) {
+        System.out.println("quoted attribute found " + attributeName + " : " + stringBuffer.getString());
+      }
 
       delete(stringBuffer);
       return;
@@ -286,7 +288,7 @@ public class HtmlParser extends Parser {
       styleJsonArray.appendElement(styleJsonObject);
       styleJsonObject.setStringMember(styleName, stringBuffer.getString());
 
-      if (printlnIt) {
+      if (printlnIt > 0) {
         System.out.println("style found " + styleName + " : " + stringBuffer.getString());
       }
 
@@ -300,10 +302,6 @@ public class HtmlParser extends Parser {
 
       skipCharacters(1);
     }
-  }
-
-  private boolean isAttributeValueCharacter(char c) {
-    return (c != '>') && (c != '/') && (!Character.isWhitespace(c));
   }
 
   private String parseStyleName() {
@@ -359,9 +357,10 @@ public class HtmlParser extends Parser {
       }
 
       // outside quotes
-      if (!isAttributeValueCharacter(c)) {
+      if ((c == ';') || (c == '>') || (c == '/')) {
         break;
       }
+
       stringBuffer.appendCharacter(consumeCharacter());
     }
 
@@ -575,7 +574,7 @@ public class HtmlParser extends Parser {
     }
 
     if (textStringBuffer.isNotEmpty()) {
-      if (printlnIt) {
+      if (printlnIt > 0) {
         System.out.println("text found " + textStringBuffer.getString());
       }
       appendTextJsonObject(jsonArray, textStringBuffer.getString());

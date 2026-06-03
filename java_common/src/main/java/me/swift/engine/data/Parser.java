@@ -4,6 +4,9 @@ import me.swift.engine.contract.TranspilableClass;
 
 public class Parser extends TranspilableClass {
 
+  // 0 - nothing, 1 - in heir, 2, everything
+  public int printlnIt = 1;
+
   public String input = null;
   public int position = 0;
 
@@ -106,6 +109,9 @@ public class Parser extends TranspilableClass {
 
   public char peekCharacter() {
     if (position < input.length()) {
+      if (printlnIt == 2) {
+        System.out.println("peek character at position " + position + " : " + input.charAt(position));
+      }
       return input.charAt(position);
     }
     return '\u0000';
@@ -113,6 +119,9 @@ public class Parser extends TranspilableClass {
 
   public char peekNextCharacter(int offset) {
     if (position + offset < input.length()) {
+      if (printlnIt == 2) {
+        System.out.println("peek next character at position " + (position + offset) + " : " + input.charAt(position + offset));
+      }
       return input.charAt(position + offset);
     }
     return '\u0000';
@@ -132,12 +141,20 @@ public class Parser extends TranspilableClass {
 
   public char consumeCharacter() {
     if (position < input.length()) {
+      if (printlnIt == 2) {
+        System.out.println("consume character at position " + position + " : " + input.charAt(position));
+      }
       return input.charAt(position++);
     }
     return '\u0000';
   }
 
   public void skipCharacters(int offset) {
+    if (printlnIt == 2) {
+      for (int i = 0; i < offset; i++) {
+        System.out.println("skip character " + (position + i) + " : " + input.charAt(position + i));
+      }
+    }
     position += offset;
   }
 
@@ -145,6 +162,9 @@ public class Parser extends TranspilableClass {
     while (position < input.length()) {
       char c = input.charAt(position);
       if (isWhitespace(c)) {
+        if (printlnIt == 2) {
+          System.out.println("skip whitespace " + position + " : " + c);
+        }
         position++;
       } else {
         break;
