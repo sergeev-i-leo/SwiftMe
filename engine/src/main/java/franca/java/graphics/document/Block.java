@@ -1,6 +1,6 @@
 package franca.java.graphics.document;
 
-import franca.java.transpiler.contracted.TranspilableClass;
+import franca.java.core.contracted.TranspilableClass;
 
 public class Block extends TranspilableClass {
 }

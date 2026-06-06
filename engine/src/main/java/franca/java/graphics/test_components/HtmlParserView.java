@@ -1,10 +1,10 @@
 package franca.java.graphics.test_components;
 
-import franca.java.transpiler.contracted.ContractedStringBuffer;
+import franca.java.core.contracted.ContractedStringBuffer;
 import franca.java.graphics.renderer.Page;
 import franca.java.graphics.renderer.View;
-import franca.java.transpiler.data.html.HtmlParser;
-import franca.java.transpiler.data.json.JsonArray;
+import franca.java.core.data.html.HtmlParser;
+import franca.java.core.data.json.JsonArray;
 import franca.java.graphics.device.Device;
 import franca.java.graphics.painter.Painter;
 

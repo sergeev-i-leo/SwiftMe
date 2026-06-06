@@ -1,6 +1,6 @@
 package franca.java.graphics.painter;
 
-import franca.java.transpiler.contracted.TranspilableClass;
+import franca.java.core.contracted.TranspilableClass;
 
 public class Painter extends TranspilableClass {
 
