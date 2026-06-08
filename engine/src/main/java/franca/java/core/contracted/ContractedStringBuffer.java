@@ -20,7 +20,7 @@ public class ContractedStringBuffer {
     stringBuilder.append(string);
   }
 
-  public void appendLineEnd() {
+  public void endLine() {
     appendString("\r\n");
   }
 

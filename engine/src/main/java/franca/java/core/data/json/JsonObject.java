@@ -2,6 +2,7 @@ package franca.java.core.data.json;
 
 import franca.java.core.contracted.ContractedArray;
 import franca.java.core.contracted.ContractedDictionary;
+import franca.java.core.contracted.ContractedStringBuffer;
 
 public class JsonObject extends JsonElement {
 
@@ -10,25 +11,37 @@ public class JsonObject extends JsonElement {
   @Override
   public void destroy() {
     delete(jsonElements);
-    jsonElements = null;
     super.destroy();
   }
 
   @Override
-  public void serialize(StringBuilder stringBuilder) {
-    putStringValue("$className", getClassName());
+  public void serialize(ContractedStringBuffer contractedStringBuffer, Integer spacesBefore) {
+    contractedStringBuffer.appendString("{");
     ContractedArray<String> keys = keys();
     for (int i = 0; i < keys.size(); i++) {
       if (i > 0) {
-        stringBuilder.append(",");
+        contractedStringBuffer.appendString(",");
       }
-      stringBuilder.append("\"").append(keys.get(i)).append("\":");
+      contractedStringBuffer.appendString("\"");
+      contractedStringBuffer.appendString(keys.get(i));
+      contractedStringBuffer.appendString("\": ");
       JsonElement member = get(keys.get(i));
-      if (member != null) {
-        member.serialize(stringBuilder);
+      if (member == null) {
+        // error
+        contractedStringBuffer.appendString("null");
+        continue;
+      }
+      if (spacesBefore != null) {
+        contractedStringBuffer.endLine();
+        for (int i1 = 0; i1 < spacesBefore; i1++) {
+          contractedStringBuffer.appendString(" ");
+        }
+        member.serialize(contractedStringBuffer, spacesBefore + 2);
+      } else {
+        member.serialize(contractedStringBuffer, null);
       }
     }
-    stringBuilder.append("}");
+    contractedStringBuffer.appendString("}");
   }
 
   public String getClassName() {

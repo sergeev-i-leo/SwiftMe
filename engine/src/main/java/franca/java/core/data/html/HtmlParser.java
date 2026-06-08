@@ -77,7 +77,7 @@ public class HtmlParser extends Parser {
       int storedPosition = position;
       parseHtmlNode(jsonArray);
       if (storedPosition == position) {
-        // oops, no cycling!
+        // no cycling!
         return;
       }
     }

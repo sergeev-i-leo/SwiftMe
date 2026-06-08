@@ -73,9 +73,9 @@ public class HtmlParserView extends View {
       if (jsonArray != null) {
         state = 2;
         page.requestRepainting();
-        StringBuilder stringBuilder = new StringBuilder();
-        jsonArray.serialize(stringBuilder);
-        device.writeFile("html-0.tmp", stringBuilder.toString(), operationResult -> {
+        ContractedStringBuffer contractedStringBuffer = new ContractedStringBuffer();
+        jsonArray.serialize(contractedStringBuffer, null);
+        device.writeFile("html-0.tmp", contractedStringBuffer.toString(), operationResult -> {
           if ((operationResult != null) && (operationResult == 200)) {
             state = 0;
           } else {

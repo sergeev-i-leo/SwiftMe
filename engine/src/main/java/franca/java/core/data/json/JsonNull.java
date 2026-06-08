@@ -1,5 +1,7 @@
 package franca.java.core.data.json;
 
+import franca.java.core.contracted.ContractedStringBuffer;
+
 public class JsonNull extends JsonElement {
 
   @Override
@@ -8,8 +10,8 @@ public class JsonNull extends JsonElement {
   }
 
   @Override
-  public void serialize(StringBuilder stringBuilder) {
-    stringBuilder.append("null");
+  public void serialize(ContractedStringBuffer contractedStringBuffer, Integer spacesBefore) {
+    contractedStringBuffer.appendString("null");
   }
 
   @Override

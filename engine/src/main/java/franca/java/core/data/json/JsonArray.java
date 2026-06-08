@@ -1,6 +1,7 @@
 package franca.java.core.data.json;
 
 import franca.java.core.contracted.ContractedArray;
+import franca.java.core.contracted.ContractedStringBuffer;
 
 public class JsonArray extends JsonElement {
 
@@ -9,19 +10,27 @@ public class JsonArray extends JsonElement {
   @Override
   public void destroy() {
     delete(jsonElements);
-    jsonElements = null;
     super.destroy();
   }
 
   @Override
-  public void serialize(StringBuilder stringBuilder) {
-    for (int i = 0; i < size(); i++) {
-      if (i > 0) {
-        stringBuilder.append(",");
+  public void serialize(ContractedStringBuffer contractedStringBuffer, Integer spacesBefore) {
+    contractedStringBuffer.appendString("[");
+    for (int i0 = 0; i0 < size(); i0++) {
+      if (i0 > 0) {
+        contractedStringBuffer.appendString(",");
       }
-      get(i).serialize(stringBuilder);
+      if (spacesBefore != null) {
+        contractedStringBuffer.endLine();
+        for (int i1 = 0; i1 < spacesBefore; i1++) {
+          contractedStringBuffer.appendString(" ");
+        }
+        get(i0).serialize(contractedStringBuffer, spacesBefore + 2);
+      } else {
+        get(i0).serialize(contractedStringBuffer, null);
+      }
     }
-    stringBuilder.append("]");
+    contractedStringBuffer.appendString("]");
   }
 
   @Override

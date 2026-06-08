@@ -1,6 +1,7 @@
 package franca.java.core.data.json;
 
 import franca.java.core.contracted.ContractedRuntime;
+import franca.java.core.contracted.ContractedStringBuffer;
 
 public class JsonIntegerPrimitive extends JsonPrimitive {
 
@@ -16,8 +17,8 @@ public class JsonIntegerPrimitive extends JsonPrimitive {
   }
 
   @Override
-  public void serialize(StringBuilder stringBuilder) {
-    stringBuilder.append(ContractedRuntime.intToString(value));
+  public void serialize(ContractedStringBuffer contractedStringBuffer, Integer spacesBefore) {
+    contractedStringBuffer.appendString(ContractedRuntime.intToString(value));
   }
 
   @Override
