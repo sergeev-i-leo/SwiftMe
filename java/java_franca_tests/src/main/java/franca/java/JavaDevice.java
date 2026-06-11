@@ -11,6 +11,11 @@ import java.nio.file.Paths;
 public class JavaDevice extends Device {
 
   @Override
+  public long getTime() {
+    return System.nanoTime() / 1_000_000;
+  }
+
+  @Override
   public void readFile(String path, StringConsumer callback) {
     new Thread(() -> {
       try {
