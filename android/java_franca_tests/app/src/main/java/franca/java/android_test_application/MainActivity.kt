@@ -20,7 +20,6 @@ class MainActivity : Activity() {
       itemTextColor = ContextCompat.getColorStateList(this@MainActivity, R.color.bottom_nav_color)
     }
 
-
     val container = FrameLayout(this).apply {
       layoutParams = LinearLayout.LayoutParams(
         LinearLayout.LayoutParams.MATCH_PARENT,

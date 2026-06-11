@@ -6,7 +6,7 @@ import franca.java.graphics.views.Page;
 
 /**
  * Router manages all animations.
- * Ownership rule: whoever creates the animation (via registerAnimation) does NOT own it — Page owns it.
+ * Ownership rule: whoever creates the animation (via registerAnimation) does NOT own it, Router owns it.
  * Page calls destroy() when removing animation from the chain.
  * External code must NEVER call destroy() on animations directly.
  */

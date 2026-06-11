@@ -7,19 +7,20 @@ import android.os.Looper
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import franca.java.graphics.device.Router
 import franca.java.graphics.views.Page
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
-class AndroidDeviceView(
+class AndroidRouterView(
   context: Context,
   private val androidDevice: AndroidDevice,
-  private val page: Page
+  private val router: Router
 ) : View(context) {
 
-  private val painter = AndroidPainter()
+  private val androidPainter = AndroidPainter()
 
   private var activePointerId = -1
   private var lastX = 0f
@@ -35,11 +36,62 @@ class AndroidDeviceView(
     isFocusableInTouchMode = true
   }
 
-  fun getPage(): Page {
-    return page;
+  fun getRouter(): Router {
+    return router;
   }
 
   fun getDevice(): AndroidDevice = androidDevice
+
+  override fun onDraw(canvas: Canvas) {
+    val startTime = androidDevice.time
+    super.onDraw(canvas)
+
+    isPainting.set(true)
+    try {
+      androidPainter.setCanvas(canvas)
+      router.paint(androidPainter)
+    } finally {
+      isPainting.set(false)
+    }
+
+    val elapsedTime = androidDevice.time - startTime
+    if (elapsedTime > 12) {
+      Log.w("AndroidDeviceView", "Slow frame: ${elapsedTime}ms")
+    }
+  }
+
+  fun startRepainting() {
+    if (scheduledExecutorService != null) {
+      return
+    }
+
+    scheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
+    lastTickTime = androidDevice.time
+    scheduledExecutorService?.scheduleAtFixedRate(
+      { tick() },
+      0,
+      2,
+      TimeUnit.MILLISECONDS
+    )
+  }
+
+  private fun tick() {
+    val tickTime = androidDevice.time
+    if (tickTime - lastTickTime < 16) {
+      return
+    }
+
+    lastTickTime = tickTime
+
+    if ((!isPainting.get()) && (router.needsRepainting())) {
+      mainHandler.post { invalidate() }
+    }
+
+    if (!router.needsNextRepainting()) {
+      scheduledExecutorService?.shutdown()
+      scheduledExecutorService = null
+    }
+  }
 
   override fun onTouchEvent(event: MotionEvent): Boolean {
     val action = event.actionMasked
@@ -52,7 +104,7 @@ class AndroidDeviceView(
         val y = event.getY(pointerIndex)
         lastX = x
         lastY = y
-        page.handlePointerDown(x, y, 1)
+        router.handlePointerDown(x, y, 1)
         return true
       }
 
@@ -92,56 +144,5 @@ class AndroidDeviceView(
     }
 
     return super.onTouchEvent(event)
-  }
-
-  override fun onDraw(canvas: Canvas) {
-    val startTime = androidDevice.time
-    super.onDraw(canvas)
-
-    isPainting.set(true)
-    try {
-      painter.setCanvas(canvas)
-      page.paint(painter)
-    } finally {
-      isPainting.set(false)
-    }
-
-    val elapsedTime = androidDevice.getTime() - startTime
-    if (elapsedTime > 12) {
-      Log.w("AndroidDeviceView", "Slow frame: ${elapsedTime}ms")
-    }
-  }
-
-  fun startRepainting() {
-    if (scheduledExecutorService != null) {
-      return
-    }
-
-    scheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
-    lastTickTime = androidDevice.time
-    scheduledExecutorService?.scheduleAtFixedRate(
-      { tick() },
-      0,
-      2,
-      TimeUnit.MILLISECONDS
-    )
-  }
-
-  private fun tick() {
-    val tickTime = androidDevice.time
-    if (tickTime - lastTickTime < 16) {
-      return
-    }
-
-    lastTickTime = tickTime
-
-    if ((!isPainting.get()) && (androidDevice.needsRepainting())) {
-      mainHandler.post { invalidate() }
-    }
-
-    if (!androidDevice.needsNextRepainting()) {
-      scheduledExecutorService?.shutdown()
-      scheduledExecutorService = null
-    }
   }
 }

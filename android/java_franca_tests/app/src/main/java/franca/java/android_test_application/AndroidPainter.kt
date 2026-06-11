@@ -2,7 +2,7 @@ package franca.java.android_test_application
 
 import android.graphics.Canvas
 import android.graphics.Paint
-import franca.java.graphics.painter.Painter
+import franca.java.graphics.device.Painter
 
 class AndroidPainter(
 ) : Painter() {
