@@ -19,11 +19,14 @@ public class SwingApplication extends JPanel {
   long lastTickTime = 0L;
 
   public SwingApplication(SwingRouter swingRouter) {
-    setPreferredSize(new Dimension(800, 600));
-    setBackground(Color.WHITE);
+    super();
 
+    this.swingRouter = swingRouter;
     swingRouter.swingApplication = this;
     swingRouter.setDevice(javaDevice);
+
+    setPreferredSize(new Dimension(800, 600));
+    setBackground(Color.WHITE);
 
     addMouseListener(new MouseAdapter() {
       @Override
