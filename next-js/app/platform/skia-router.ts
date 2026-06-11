@@ -10,31 +10,46 @@ export class SkiaRouter extends Router {
   private animationFrameId: number | null = null;
   private lastTickTime: number = 0;
 
+  private boundHandleMouseDown: (e: MouseEvent) => void;
+  private boundHandleMouseMove: (e: MouseEvent) => void;
+  private boundHandleMouseUp: (e: MouseEvent) => void;
+
   constructor(device: SkiaDevice) {
     super();
     this.device = device;
     this.setDevice(device);
+
+    this.boundHandleMouseDown = this.handleMouseDown.bind(this);
+    this.boundHandleMouseMove = this.handleMouseMove.bind(this);
+    this.boundHandleMouseUp = this.handleMouseUp.bind(this);
   }
 
   run(canvas: HTMLCanvasElement, rootPage: Page): void {
     this.canvas = canvas;
-    this.painter = new SkiaPainter(canvas);
     this.pushPage(rootPage);
 
     (this.device as SkiaDevice).loadResources().then(() => {
+      this.painter = new SkiaPainter(canvas, this.device as SkiaDevice);
       this.requestRepainting();
-      this.startRepainting();
     });
+
+    this.canvas.addEventListener('mousedown', this.boundHandleMouseDown);
+    this.canvas.addEventListener('mousemove', this.boundHandleMouseMove);
+    this.canvas.addEventListener('mouseup', this.boundHandleMouseUp);
+
+    this.canvas.setAttribute('oncontextmenu', 'return false;');
   }
 
   startRepainting(): void {
-    if (this.animationFrameId !== null) return;
+    if (this.animationFrameId !== null) {
+      return;
+    }
     this.lastTickTime = performance.now();
     this.animationFrameId = requestAnimationFrame(this.tick.bind(this));
   }
 
   private tick(now: number): void {
-    if (!this.painter || !this.canvas) {
+    if ((!this.painter) || (!this.canvas)) {
       this.stopRepainting();
       return;
     }
@@ -45,9 +60,9 @@ export class SkiaRouter extends Router {
     }
     this.lastTickTime = now;
 
-    const needsRedraw = this.needsRepainting();
+    const needsRepainting = this.needsRepainting();
 
-    if (needsRedraw) {
+    if (needsRepainting) {
       this.painter.clear('#f0f0f0');
       if (this.topPage) {
         this.topPage.paint(this.painter);
@@ -71,7 +86,37 @@ export class SkiaRouter extends Router {
 
   destroy(): void {
     this.stopRepainting();
+    this.canvas?.removeEventListener('mousedown', this.boundHandleMouseDown);
+    this.canvas?.removeEventListener('mousemove', this.boundHandleMouseMove);
+    this.canvas?.removeEventListener('mouseup', this.boundHandleMouseUp);
+
     this.painter = null;
     this.canvas = null;
   }
+
+  private handleMouseDown(e: MouseEvent): void {
+    if (!this.canvas) return;
+
+    const rect = this.canvas.getBoundingClientRect();
+    const scaleX = this.canvas.width / rect.width;
+    const scaleY = this.canvas.height / rect.height;
+
+    const canvasX = (e.clientX - rect.left) * scaleX;
+    const canvasY = (e.clientY - rect.top) * scaleY;
+
+    let button = 0;
+    if (e.button === 0) button = 1;      // левая
+    else if (e.button === 2) button = 3; // правая
+
+    this.handlePointerDown(canvasX, canvasY, button);
+  }
+
+  private handleMouseMove(e: MouseEvent): void {
+    // Будет нужно для drag-and-drop
+  }
+
+  private handleMouseUp(e: MouseEvent): void {
+    // Будет нужно для drag-and-drop
+  }
+
 }

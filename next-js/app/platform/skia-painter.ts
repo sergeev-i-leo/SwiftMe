@@ -1,46 +1,90 @@
 import {Painter} from "../java_franca/graphics/device/painter";
+import {SkiaDevice} from "./skia-device";
 
 export class SkiaPainter extends Painter {
 
-  private canvas: HTMLCanvasElement;
-  private ctx: CanvasRenderingContext2D | null = null;
+  private surface: any = null;
+  private canvasKit: any = null;
+  private readonly canvasElement: HTMLCanvasElement;
+  private skiaDevice: SkiaDevice;
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(canvasElement: HTMLCanvasElement, skiaDevice: SkiaDevice) {
     super();
-    this.canvas = canvas;
-    // Пока используем Canvas 2D как заглушку
-    this.ctx = canvas.getContext('2d');
+    this.canvasElement = canvasElement;
+    this.skiaDevice = skiaDevice;
+    this.canvasKit = skiaDevice.getCanvasKit();
+  }
+
+  private ensureSurface(): void {
+    if (this.surface) {
+      return;
+    }
+
+    if (!this.canvasKit) {
+      this.canvasKit = this.skiaDevice.getCanvasKit();
+    }
+
+    if (!this.canvasKit) {
+      console.warn('CanvasKit not ready');
+      return;
+    }
+
+    this.surface = this.canvasKit.MakeWebGLCanvasSurface(this.canvasElement);
   }
 
   paintText(text: string, x: number, y: number, deviceFontKey: string, deviceColor: number): void {
-    if (!this.ctx) return;
+    this.ensureSurface();
+    if (!this.surface) {
+      return;
+    }
 
-    this.ctx.fillStyle = `rgba(0, 0, 0, ${deviceColor / 255})`;
-    this.ctx.font = '16px sans-serif';
-    this.ctx.fillText(text, x, y);
+    const canvas = this.surface.getCanvas();
+    const font = this.skiaDevice.getFont('andika_regular');
+
+    const paint = new this.canvasKit.Paint();
+    const alpha = deviceColor / 255;
+    paint.setColor(this.canvasKit.Color(0, 0, 0, alpha));
+
+    const skFont = new this.canvasKit.Font(font, 16);
+    canvas.drawText(text, x, y, paint, skFont);
   }
 
   drawRect(x: number, y: number, width: number, height: number): void {
-    if (!this.ctx) return;
-    this.ctx.fillStyle = '#3498db';
-    this.ctx.fillRect(x, y, width, height);
+    this.ensureSurface();
+    if (!this.surface) return;
+
+    const canvas = this.surface.getCanvas();
+    const paint = new this.canvasKit.Paint();
+    paint.setColor(this.canvasKit.Color(52, 152, 219, 1));
+    paint.setStyle(this.canvasKit.PaintStyle.Fill);
+
+    const rect = this.canvasKit.XYWHRect(x, y, width, height);
+    canvas.drawRect(rect, paint);
   }
 
   drawCircle(x: number, y: number, radius: number): void {
-    if (!this.ctx) return;
-    this.ctx.beginPath();
-    this.ctx.arc(x, y, radius, 0, Math.PI * 2);
-    this.ctx.fillStyle = '#e74c3c';
-    this.ctx.fill();
+    this.ensureSurface();
+    if (!this.surface) return;
+
+    const canvas = this.surface.getCanvas();
+    const paint = new this.canvasKit.Paint();
+    paint.setColor(this.canvasKit.Color(231, 76, 60, 1));
+    paint.setStyle(this.canvasKit.PaintStyle.Fill);
+
+    canvas.drawCircle(x, y, radius, paint);
   }
 
   clear(color?: string): void {
-    if (!this.ctx) return;
-    this.ctx.fillStyle = color || '#ffffff';
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ensureSurface();
+    if (!this.surface) return;
+
+    const canvas = this.surface.getCanvas();
+    canvas.clear(this.canvasKit.Color(255, 255, 255, 1));
   }
 
   flush(): void {
-    // для Canvas 2D не требуется
+    if (this.surface) {
+      this.surface.flush();
+    }
   }
 }
