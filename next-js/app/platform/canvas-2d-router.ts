@@ -37,7 +37,7 @@ export class Canvas2DRouter extends Router {
     canvas.addEventListener('contextmenu', this.boundHandleContextMenu);
 
     (this.device as Canvas2DDevice).loadResources().then(() => {
-      this.startRepainting();
+      this.requestRepainting();
     });
   }
 
@@ -60,7 +60,9 @@ export class Canvas2DRouter extends Router {
   }
 
   startRepainting(): void {
-    if (this.animationFrameId !== null) return;
+    if (this.animationFrameId !== null) {
+      return;
+    }
     this.lastTickTime = performance.now();
     this.animationFrameId = requestAnimationFrame(this.tick.bind(this));
   }

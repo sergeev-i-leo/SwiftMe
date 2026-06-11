@@ -8,11 +8,9 @@
     "start": "next start"
   },
   "dependencies": {
-    "@ant-design/icons": "^6.2.5",
     "@types/node": "24.10.1",
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
-    "antd": "^6.4.3",
     "next": "13.4.19",
     "react": "18.2.0",
     "react-dom": "18.2.0",

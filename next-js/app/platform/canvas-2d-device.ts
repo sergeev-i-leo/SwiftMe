@@ -22,14 +22,13 @@ export class Canvas2DDevice extends Device {
       return;
     }
 
-    // Загружаем шрифты (пример)
-    /*const fontNames = ['Roboto', 'Arial'];
+    const fontNames = ['andika_regular', 'oswald_bold'];
     for (const fontName of fontNames) {
       const font = new FontFace(fontName, `url(/fonts/${fontName}.ttf)`);
       await font.load();
       document.fonts.add(font);
       this.fonts.set(fontName, font);
-    }*/
+    }
 
     this._isReady = true;
   }
