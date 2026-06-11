@@ -1,8 +1,8 @@
 package franca.java.graphics.test_components;
 
 import franca.java.core.contracted.ContractedStringBuffer;
-import franca.java.graphics.renderer.Page;
-import franca.java.graphics.renderer.View;
+import franca.java.graphics.views.Page;
+import franca.java.graphics.views.View;
 import franca.java.core.data.html.HtmlParser;
 import franca.java.core.data.json.JsonArray;
 import franca.java.graphics.device.Device;
@@ -43,7 +43,7 @@ public class HtmlParserView extends View {
   public void handlePointerDown(Device device, Page page, float painterX, float painterY, float pointedX, float pointedY, int buttonNumber) {
     if (state == 0) {
       state = 1;
-      page.requestRepainting();
+      device.requestRepainting();
       device.readFile("test.html", result -> {
         if (result != null) {
           HtmlParser htmlParser = new HtmlParser();
@@ -61,18 +61,18 @@ public class HtmlParserView extends View {
             } else {
               state = 404;
             }
-            page.requestRepainting();
+            device.requestRepainting();
           });
         } else {
           state = 404;
         }
-        page.requestRepainting();
+        device.requestRepainting();
       });
     }
     if (state == 200) {
       if (jsonArray != null) {
         state = 2;
-        page.requestRepainting();
+        device.requestRepainting();
         ContractedStringBuffer contractedStringBuffer = new ContractedStringBuffer();
         jsonArray.serialize(contractedStringBuffer, null);
         device.writeFile("html-0.tmp", contractedStringBuffer.toString(), operationResult -> {
@@ -81,7 +81,7 @@ public class HtmlParserView extends View {
           } else {
             state = 404;
           }
-          page.requestRepainting();
+          device.requestRepainting();
         });
       }
     }

@@ -1,4 +1,4 @@
-package franca.java.graphics.renderer;
+package franca.java.graphics.views;
 
 import franca.java.core.data.json.JsonObject;
 import franca.java.graphics.device.Device;

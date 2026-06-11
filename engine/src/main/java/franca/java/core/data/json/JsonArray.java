@@ -26,7 +26,7 @@ public class JsonArray extends JsonElement {
       }
       if (spacesBefore != null) {
         for (int i1 = 0; i1 < spacesBefore + 2; i1++) {
-          contractedStringBuffer.appendString(".");
+          contractedStringBuffer.appendString(" ");
         }
         jsonElement.serialize(contractedStringBuffer, spacesBefore + 2);
         if (i0 + 1 < size()) {
@@ -42,7 +42,7 @@ public class JsonArray extends JsonElement {
     }
     if (spacesBefore != null) {
       for (int i1 = 0; i1 < spacesBefore; i1++) {
-        contractedStringBuffer.appendString(".");
+        contractedStringBuffer.appendString(" ");
       }
     }
     contractedStringBuffer.appendString("]");

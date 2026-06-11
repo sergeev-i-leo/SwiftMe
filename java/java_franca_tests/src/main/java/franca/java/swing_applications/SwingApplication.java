@@ -1,5 +1,5 @@
 package franca.java.swing_applications;
-import franca.java.graphics.renderer.Page;
+import franca.java.graphics.views.Page;
 
 import javax.swing.*;
 import java.awt.*;
@@ -57,10 +57,10 @@ public class SwingApplication extends JPanel {
       return;
     }
     lastTickTime = tickTime;
-    if (page.needsRepainting()) {
+    if (swingDevice.needsRepainting()) {
       SwingUtilities.invokeLater(() -> repaint());
     }
-    if (!page.needsNextRepainting()) {
+    if (!swingDevice.needsNextRepainting()) {
       scheduledExecutorService.shutdown();
       scheduledExecutorService = null;
     }

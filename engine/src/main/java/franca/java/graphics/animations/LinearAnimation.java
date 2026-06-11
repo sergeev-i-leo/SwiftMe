@@ -1,6 +1,5 @@
 package franca.java.graphics.animations;
 
-import franca.java.graphics.renderer.Page;
 import franca.java.graphics.device.Device;
 
 public class LinearAnimation extends Animation {
@@ -15,7 +14,7 @@ public class LinearAnimation extends Animation {
   }
 
   @Override
-  public boolean needsRepainting(Device device, Page page, long time) {
+  public boolean needsRepainting(Device device, long time) {
 
     if (duration == 0L) {
       return false;

@@ -1,6 +1,6 @@
 package franca.java.swing_applications;
 
-import franca.java.graphics.renderer.Page;
+import franca.java.graphics.views.Page;
 import franca.java.graphics.test_components.FlavouredMarkdownParserView;
 
 import javax.swing.*;

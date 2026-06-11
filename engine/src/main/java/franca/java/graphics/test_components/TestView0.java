@@ -3,8 +3,8 @@ package franca.java.graphics.test_components;
 import java.util.Random;
 
 import franca.java.graphics.device.Device;
-import franca.java.graphics.renderer.Page;
-import franca.java.graphics.renderer.View;
+import franca.java.graphics.views.Page;
+import franca.java.graphics.views.View;
 import franca.java.graphics.animations.LinearAnimation;
 import franca.java.graphics.painter.Painter;
 
@@ -28,17 +28,17 @@ public class TestView0 extends View {
   @Override
   public void handlePointerDown(Device device, Page page, float painterX, float painterY, float pointedX, float pointedY, int buttonNumber) {
     if (buttonNumber == 1) {
-      removeViewAnimation(page);
+      removeViewAnimation(device);
       viewAnimation = new ViewAnimation(0, 100, 500, this);
-      page.registerAnimation(viewAnimation);
+      device.registerAnimation(viewAnimation);
     } else {
-      page.requestRepainting();
+      device.requestRepainting();
     }
   }
 
-  public void removeViewAnimation(Page page) {
+  public void removeViewAnimation(Device device) {
     if (viewAnimation != null) {
-      page.removeAnimation(viewAnimation);
+      device.removeAnimation(viewAnimation);
       viewAnimation = null;
     }
   }
@@ -54,10 +54,10 @@ public class TestView0 extends View {
     }
 
     @Override
-    public boolean needsRepainting(Device device, Page page, long time) {
-      boolean result = super.needsRepainting(device, page, time);
+    public boolean needsRepainting(Device device, long time) {
+      boolean result = super.needsRepainting(device, time);
       if (!result) {
-        testView0.removeViewAnimation(page);
+        testView0.removeViewAnimation(device);
         return false;
       }
 

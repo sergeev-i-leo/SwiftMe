@@ -1,7 +1,6 @@
 package franca.java.graphics.animations;
 
 import franca.java.core.contracted.TranspilableClass;
-import franca.java.graphics.renderer.Page;
 import franca.java.graphics.device.Device;
 
 public class Animation extends TranspilableClass {
@@ -34,11 +33,11 @@ public class Animation extends TranspilableClass {
     return duration > 0L;
   }
 
-  public boolean needsRepainting(Device device, Page page, long time) {
+  public boolean needsRepainting(Device device, long time) {
     return duration > 0L;
   }
 
-  public boolean needsNextRepainting(Device device, Page page, long time) {
+  public boolean needsNextRepainting(Device device, long time) {
     return duration > 0L;
   }
 

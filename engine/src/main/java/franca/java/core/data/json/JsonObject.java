@@ -28,13 +28,13 @@ public class JsonObject extends JsonElement {
       }
       if (spacesBefore != null) {
         for (int i1 = 0; i1 < spacesBefore + 2; i1++) {
-          contractedStringBuffer.appendString(".");
+          contractedStringBuffer.appendString(" ");
         }
       }
       String name = keys.get(i0);
       contractedStringBuffer.appendString("\"");
       contractedStringBuffer.appendString(name);
-      contractedStringBuffer.appendString("\":.");
+      contractedStringBuffer.appendString("\": ");
       if (spacesBefore != null) {
         jsonElement.serialize(contractedStringBuffer, spacesBefore + 2 + name.length() + 4);
         if (i0 + 1 < keys.size()) {
@@ -50,7 +50,7 @@ public class JsonObject extends JsonElement {
     }
     if (spacesBefore != null) {
       for (int i = 0; i < spacesBefore; i++) {
-        contractedStringBuffer.appendString(".");
+        contractedStringBuffer.appendString(" ");
       }
     }
     contractedStringBuffer.appendString("}");

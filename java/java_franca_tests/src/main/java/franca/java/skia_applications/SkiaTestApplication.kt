@@ -1,7 +1,7 @@
 package franca.java.skia_applications
 
 import org.jetbrains.skiko.*
-import franca.java.graphics.renderer.Page
+import franca.java.graphics.views.Page
 import franca.java.graphics.test_components.TestView0
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
@@ -70,11 +70,11 @@ class SkiaTestApplication {
       }
       lastTickTime = tickTime
 
-      if (page.needsRepainting()) {
+      if (skiaDevice.needsRepainting()) {
         SwingUtilities.invokeLater { skiaLayer.needRedraw() }
       }
 
-      if (!page.needsNextRepainting()) {
+      if (!skiaDevice.needsNextRepainting()) {
         scheduler?.shutdown()
         scheduler = null
       }
