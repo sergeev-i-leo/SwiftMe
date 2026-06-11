@@ -1,7 +1,7 @@
-import {Router} from "../../java_franca/graphics/device/router";
-import {Canvas2dDevice} from "../../platform/platform-device";
-import {Canvas2DPainter} from "../../platform/canvas-2d-painter";
-import {Page} from "../../java_franca/graphics/views/page";
+import {Canvas2DDevice} from "./canvas-2d-device";
+import {Router} from "../java_franca/graphics/device/router";
+import {Canvas2DPainter} from "./canvas-2d-painter";
+import {Page} from "../java_franca/graphics/views/page";
 
 export class Canvas2DRouter extends Router {
 
@@ -10,7 +10,7 @@ export class Canvas2DRouter extends Router {
   private animationFrameId: number | null = null;
   private lastTickTime: number = 0;
 
-  constructor(device: Canvas2dDevice) {
+  constructor(device: Canvas2DDevice) {
     super();
     this.device = device;
     this.setDevice(device);
@@ -23,7 +23,7 @@ export class Canvas2DRouter extends Router {
     this.pushPage(rootPage);
 
     // Загружаем ресурсы и запускаем цикл
-    (this.device as Canvas2dDevice).loadResources().then(() => {
+    (this.device as Canvas2DDevice).loadResources().then(() => {
       this.startRepainting();
     });
   }

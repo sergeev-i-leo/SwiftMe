@@ -4,6 +4,7 @@ import {Tween} from "../animations/tween";
 import {Painter} from "./painter";
 
 export class Router {
+
   device: Device | null = null;
   topPage: Page | null = null;
 
