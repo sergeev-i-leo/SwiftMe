@@ -1,6 +1,6 @@
 package franca.java.skia_applications
 
-import franca.java.graphics.painter.Painter
+import franca.java.graphics.device.Painter
 
 class SkiaPainter(private val canvas: org.jetbrains.skia.Canvas) : Painter() {
 

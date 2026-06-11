@@ -1,12 +1,12 @@
 package franca.java.graphics.test_components;
 
 import franca.java.core.contracted.ContractedStringBuffer;
+import franca.java.graphics.device.Painter;
+import franca.java.graphics.device.Router;
 import franca.java.graphics.views.Page;
 import franca.java.graphics.views.View;
 import franca.java.core.data.html.HtmlParser;
 import franca.java.core.data.json.JsonArray;
-import franca.java.graphics.device.Device;
-import franca.java.graphics.painter.Painter;
 
 public class HtmlParserView extends View {
 
@@ -15,7 +15,7 @@ public class HtmlParserView extends View {
   private String htmlOutput = null;
 
   @Override
-  public void paint(Device device, Painter painter, Page page) {
+  public void paint(Router router, Painter painter, Page page) {
 
     switch (state) {
       case 0:
@@ -40,11 +40,11 @@ public class HtmlParserView extends View {
   }
 
   @Override
-  public void handlePointerDown(Device device, Page page, float painterX, float painterY, float pointedX, float pointedY, int buttonNumber) {
+  public void handlePointerDown(Router router, Page page, float painterX, float painterY, float pointedX, float pointedY, int buttonNumber) {
     if (state == 0) {
       state = 1;
-      device.requestRepainting();
-      device.readFile("test.html", result -> {
+      router.requestRepainting();
+      router.getDevice().readFile("test.html", result -> {
         if (result != null) {
           HtmlParser htmlParser = new HtmlParser();
           // look for debugging level in input
@@ -55,33 +55,33 @@ public class HtmlParserView extends View {
           htmlParser.toStringBuffer(jsonArray, contractedStringBuffer);
           htmlOutput = contractedStringBuffer.getString();
           delete(contractedStringBuffer);
-          device.writeFile("test-output.html", htmlOutput, operationResult -> {
+          router.getDevice().writeFile("test-output.html", htmlOutput, operationResult -> {
             if ((operationResult != null) && (operationResult == 200)) {
               state = 200;
             } else {
               state = 404;
             }
-            device.requestRepainting();
+            router.requestRepainting();
           });
         } else {
           state = 404;
         }
-        device.requestRepainting();
+        router.requestRepainting();
       });
     }
     if (state == 200) {
       if (jsonArray != null) {
         state = 2;
-        device.requestRepainting();
+        router.requestRepainting();
         ContractedStringBuffer contractedStringBuffer = new ContractedStringBuffer();
         jsonArray.serialize(contractedStringBuffer, null);
-        device.writeFile("html-0.tmp", contractedStringBuffer.toString(), operationResult -> {
+        router.getDevice().writeFile("html-0.tmp", contractedStringBuffer.toString(), operationResult -> {
           if ((operationResult != null) && (operationResult == 200)) {
             state = 0;
           } else {
             state = 404;
           }
-          device.requestRepainting();
+          router.requestRepainting();
         });
       }
     }

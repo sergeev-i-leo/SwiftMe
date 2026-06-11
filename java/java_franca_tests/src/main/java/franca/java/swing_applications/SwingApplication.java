@@ -1,5 +1,4 @@
 package franca.java.swing_applications;
-import franca.java.graphics.views.Page;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,28 +8,30 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import franca.java.JavaDevice;
+
 public class SwingApplication extends JPanel {
 
-  SwingDevice swingDevice = new SwingDevice(this);
-  Page page;
+  JavaDevice javaDevice = new JavaDevice();
+  SwingRouter swingRouter;
 
   ScheduledExecutorService scheduledExecutorService = null;
   long lastTickTime = 0L;
 
-  public SwingApplication(Page page) {
+  public SwingApplication(SwingRouter swingRouter) {
     setPreferredSize(new Dimension(800, 600));
     setBackground(Color.WHITE);
 
-    this.page = page;
-    page.setDevice(swingDevice);
+    swingRouter.swingApplication = this;
+    swingRouter.setDevice(javaDevice);
 
     addMouseListener(new MouseAdapter() {
       @Override
       public void mousePressed(MouseEvent mouseEvent) {
         if (mouseEvent.getButton() == MouseEvent.BUTTON1) {
-          page.handlePointerDown(mouseEvent.getX(), mouseEvent.getY(), 1);
+          swingRouter.handlePointerDown(mouseEvent.getX(), mouseEvent.getY(), 1);
         } else if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
-          page.handlePointerDown(mouseEvent.getX(), mouseEvent.getY(), 3);
+          swingRouter.handlePointerDown(mouseEvent.getX(), mouseEvent.getY(), 3);
         }
       }
     });
@@ -39,7 +40,7 @@ public class SwingApplication extends JPanel {
   @Override
   protected void paintComponent(Graphics graphics) {
     super.paintComponent(graphics);
-    page.paint(new SwingPainter(graphics));
+    swingRouter.paint(new SwingPainter(graphics));
   }
 
   public void startRepainting() {
@@ -47,20 +48,20 @@ public class SwingApplication extends JPanel {
       return;
     }
     scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-    lastTickTime = swingDevice.getTime();
+    lastTickTime = javaDevice.getTime();
     scheduledExecutorService.scheduleAtFixedRate(this::tick, 0, 2, TimeUnit.MILLISECONDS);
   }
 
   private void tick() {
-    long tickTime = swingDevice.getTime();
+    long tickTime = javaDevice.getTime();
     if (tickTime - lastTickTime < 16) {
       return;
     }
     lastTickTime = tickTime;
-    if (swingDevice.needsRepainting()) {
+    if (swingRouter.needsRepainting()) {
       SwingUtilities.invokeLater(() -> repaint());
     }
-    if (!swingDevice.needsNextRepainting()) {
+    if (!swingRouter.needsNextRepainting()) {
       scheduledExecutorService.shutdown();
       scheduledExecutorService = null;
     }

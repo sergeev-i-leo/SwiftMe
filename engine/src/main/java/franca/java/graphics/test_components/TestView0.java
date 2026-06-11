@@ -4,17 +4,17 @@ import java.util.Random;
 
 import franca.java.graphics.animations.Ease;
 import franca.java.graphics.animations.Tween;
-import franca.java.graphics.device.Device;
+import franca.java.graphics.device.Painter;
+import franca.java.graphics.device.Router;
 import franca.java.graphics.views.Page;
 import franca.java.graphics.views.View;
-import franca.java.graphics.painter.Painter;
 
 public class TestView0 extends View {
 
   MyTween myTween = null;
 
   @Override
-  public void paint(Device device, Painter painter, Page page) {
+  public void paint(Router router, Painter painter, Page page) {
 
     float x = new Random().nextInt(50) + 50f;
     float y = new Random().nextInt(50) + 50f;
@@ -27,19 +27,19 @@ public class TestView0 extends View {
   }
 
   @Override
-  public void handlePointerDown(Device device, Page page, float painterX, float painterY, float pointedX, float pointedY, int buttonNumber) {
+  public void handlePointerDown(Router router, Page page, float painterX, float painterY, float pointedX, float pointedY, int buttonNumber) {
     if (buttonNumber == 1) {
-      removeViewAnimation(device);
+      removeViewAnimation(router);
       myTween = new MyTween(page, this);
-      device.registerTween(myTween);
+      router.registerTween(myTween);
     } else {
-      device.requestRepainting();
+      router.requestRepainting();
     }
   }
 
-  public void removeViewAnimation(Device device) {
+  public void removeViewAnimation(Router router) {
     if (myTween != null) {
-      device.removeTween(myTween);
+      router.removeTween(myTween);
       myTween = null;
     }
   }
@@ -55,10 +55,10 @@ public class TestView0 extends View {
     }
 
     @Override
-    public boolean needsRepainting(Device device) {
-      boolean result = super.needsRepainting(device);
+    public boolean needsRepainting(Router router) {
+      boolean result = super.needsRepainting(router);
       if (!result) {
-        testView0.removeViewAnimation(device);
+        testView0.removeViewAnimation(router);
         return false;
       }
 

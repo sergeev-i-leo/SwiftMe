@@ -1,16 +1,16 @@
 package franca.java.graphics.test_components;
 
+import franca.java.graphics.device.Painter;
+import franca.java.graphics.device.Router;
 import franca.java.graphics.views.Page;
 import franca.java.graphics.views.View;
-import franca.java.graphics.device.Device;
-import franca.java.graphics.painter.Painter;
 
 public class FlavouredMarkdownParserView extends View {
 
   private int state = 0;
 
   @Override
-  public void paint(Device device, Painter painter, Page page) {
+  public void paint(Router router, Painter painter, Page page) {
 
     switch (state) {
       case 0:
@@ -35,29 +35,29 @@ public class FlavouredMarkdownParserView extends View {
   }
 
   @Override
-  public void handlePointerDown(Device device, Page page, float painterX, float painterY, float pointedX, float pointedY, int buttonNumber) {
+  public void handlePointerDown(Router router, Page page, float painterX, float painterY, float pointedX, float pointedY, int buttonNumber) {
     if (state == 0) {
       state = 1;
-      device.requestRepainting();
-      device.readFile("obsidian-0.md", result -> {
+      router.requestRepainting();
+      router.getDevice().readFile("obsidian-0.md", result -> {
         if (result != null) {
           state = 200;
         } else {
           state = 404;
         }
-        device.requestRepainting();
+        router.requestRepainting();
       });
     }
     if (state == 200) {
       state = 2;
-      device.requestRepainting();
-      device.writeFile("obsidian-0.tmp", "Hello World", operationResult -> {
+      router.requestRepainting();
+      router.getDevice().writeFile("obsidian-0.tmp", "Hello World", operationResult -> {
         if ((operationResult != null) && (operationResult == 200)) {
           state = 0;
         } else {
           state = 404;
         }
-        device.requestRepainting();
+        router.requestRepainting();
       });
     }
   }

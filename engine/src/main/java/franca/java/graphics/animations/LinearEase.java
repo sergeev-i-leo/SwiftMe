@@ -1,6 +1,6 @@
 package franca.java.graphics.animations;
 
-import franca.java.graphics.device.Device;
+import franca.java.graphics.device.Router;
 
 public class LinearEase extends Ease {
 
@@ -14,7 +14,7 @@ public class LinearEase extends Ease {
   }
 
   @Override
-  public boolean tick(Device device, long startedTime) {
+  public boolean tick(Router router, long startedTime) {
 
     // returns true when needs repainting
 
@@ -22,7 +22,7 @@ public class LinearEase extends Ease {
       return false;
     }
 
-    long currentTime = device.getTime();
+    long currentTime = router.getDevice().getTime();
 
     if (currentTime >= startedTime + duration) {
       currentValue = targetValue;

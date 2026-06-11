@@ -2,8 +2,8 @@ package franca.java.graphics.views;
 
 import franca.java.core.contracted.TranspilableClass;
 import franca.java.core.contracted.ContractedArray;
-import franca.java.graphics.device.Device;
-import franca.java.graphics.painter.Painter;
+import franca.java.graphics.device.Painter;
+import franca.java.graphics.device.Router;
 
 /**
  * Page manages all animations.
@@ -14,11 +14,12 @@ import franca.java.graphics.painter.Painter;
 
 public class Page extends TranspilableClass {
 
-  Device device = null;
+  Router router = null;
 
   public ContractedArray<View> views = new ContractedArray<View>();
 
-  public Page() {
+  public Page(Router router) {
+    this.router = router;
   }
 
   @Override
@@ -28,27 +29,15 @@ public class Page extends TranspilableClass {
     super.destroy();
   }
 
-  public void setDevice(Device device) {
-    this.device = device;
-  }
-
   public void paint(Painter painter) {
-    if (device == null) {
-      return;
-    }
-
     for (int i = 0; i < views.size(); i++) {
-      views.get(i).paint(device, painter, this);
+      views.get(i).paint(router, painter, this);
     }
   }
 
   public void handlePointerDown(float pointedX, float pointedY, int buttonNumber) {
-    if (device == null) {
-      return;
-    }
-
     for (int i = 0; i < views.size(); i++) {
-      views.get(i).handlePointerDown(device, this, 0f, 0f, pointedX, pointedY, buttonNumber);
+      views.get(i).handlePointerDown(router, this, 0f, 0f, pointedX, pointedY, buttonNumber);
     }
   }
 }

@@ -1,15 +1,15 @@
 package franca.java.graphics.animations;
 
 import franca.java.core.contracted.TranspilableClass;
-import franca.java.graphics.device.Device;
+import franca.java.graphics.device.Router;
 import franca.java.graphics.views.Page;
 import franca.java.graphics.views.View;
 
 public class Tween extends TranspilableClass {
 
-  Page page;
-  View view;
-  Ease ease;
+  Page page = null;
+  View view = null;
+  Ease ease = null;
 
   public int tweenId = 0;
   public long registeredTime = 0L;
@@ -38,15 +38,15 @@ public class Tween extends TranspilableClass {
     return ease;
   }
 
-  public boolean needsRepainting(Device device) {
+  public boolean needsRepainting(Router router) {
     if (ease == null) {
       // one shot animation
       return true;
     }
-    return ease.tick(device, registeredTime);
+    return ease.tick(router, registeredTime);
   }
 
-  public boolean needsNextRepainting(Device device) {
+  public boolean needsNextRepainting(Router router) {
     if (ease == null) {
       // one shot animation
       return false;

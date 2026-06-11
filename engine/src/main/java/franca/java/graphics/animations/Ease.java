@@ -1,7 +1,7 @@
 package franca.java.graphics.animations;
 
 import franca.java.core.contracted.TranspilableClass;
-import franca.java.graphics.device.Device;
+import franca.java.graphics.device.Router;
 
 public class Ease extends TranspilableClass {
 
@@ -30,7 +30,7 @@ public class Ease extends TranspilableClass {
     return currentValue != targetValue;
   }
 
-  public boolean tick(Device device, long startedTime) {
+  public boolean tick(Router router, long startedTime) {
     // returns true when needs repainting
     return true;
   }

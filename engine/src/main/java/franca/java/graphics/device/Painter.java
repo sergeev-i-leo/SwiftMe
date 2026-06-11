@@ -1,4 +1,4 @@
-package franca.java.graphics.painter;
+package franca.java.graphics.device;
 
 import franca.java.core.contracted.TranspilableClass;
 
