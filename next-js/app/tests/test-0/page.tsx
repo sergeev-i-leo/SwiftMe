@@ -1,81 +1,37 @@
-import {Router} from "../../java_franca/graphics/device/router";
-import {Canvas2dDevice} from "../../platform/platform-device";
-import {Canvas2DPainter} from "../../platform/canvas-2d-painter";
+'use client';
+
+import * as React from "react";
+import { useEffect, useRef } from 'react';
+import {Canvas2DDevice} from "../../platform/canvas-2d-device";
+import {Canvas2DRouter} from "../../platform/canvas-2d-router";
 import {Page} from "../../java_franca/graphics/views/page";
+import {TestView0} from "./test-view-0";
 
-export class Canvas2DRouter extends Router {
+export default function Test0Route() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  private painter: Canvas2DPainter | null = null;
-  private canvas: HTMLCanvasElement | null = null;
-  private animationFrameId: number | null = null;
-  private lastTickTime: number = 0;
-
-  constructor(device: Canvas2dDevice) {
-    super();
-    this.device = device;
-    this.setDevice(device);
-  }
-
-  // Главный метод: настройка и запуск
-  run(canvas: HTMLCanvasElement, rootPage: Page): void {
-    this.canvas = canvas;
-    this.painter = new Canvas2DPainter(canvas);
-    this.pushPage(rootPage);
-
-    // Загружаем ресурсы и запускаем цикл
-    (this.device as Canvas2dDevice).loadResources().then(() => {
-      this.startRepainting();
-    });
-  }
-
-  startRepainting(): void {
-    if (this.animationFrameId !== null) return;
-    this.lastTickTime = performance.now();
-    this.animationFrameId = requestAnimationFrame(this.tick.bind(this));
-  }
-
-  private tick(now: number): void {
-    if (!this.painter || !this.canvas) {
-      this.stopRepainting();
+  useEffect(() => {
+    if (!canvasRef.current) {
       return;
     }
 
-    // FPS лимитер (~60 fps)
-    if (now - this.lastTickTime < 16) {
-      this.animationFrameId = requestAnimationFrame(this.tick.bind(this));
-      return;
-    }
-    this.lastTickTime = now;
+    const device = Canvas2DDevice.getInstance();
+    const router = new Canvas2DRouter(device);
 
-    // Обновляем состояние твинов
-    const needsRedraw = this.needsRepainting();
+    const page = new Page(router);
+    page.views.push(new TestView0());
 
-    // Рисуем, если нужно
-    if (needsRedraw) {
-      this.painter.clear('#f0f0f0');
-      if (this.topPage) {
-        this.topPage.paint(this.painter);
-      }
-      this.painter.flush();
-    }
+    router.run(canvasRef.current, page);
+  }, []);
 
-    // Продолжаем цикл, если нужны ещё кадры
-    if (this.needsNextRepainting()) {
-      this.animationFrameId = requestAnimationFrame(this.tick.bind(this));
-    } else {
-      this.stopRepainting();
-    }
-  }
-
-  private stopRepainting(): void {
-    if (this.animationFrameId !== null) {
-      cancelAnimationFrame(this.animationFrameId);
-      this.animationFrameId = null;
-    }
-  }
-
-  // Прокси для событий мыши
-  handleMouseDown(x: number, y: number, button: number): void {
-    this.handlePointerDown(x, y, button);
-  }
+  return (
+    <div style={{ width: '100vw', height: '100vh' }}>
+      <canvas
+        ref={canvasRef}
+        width={800}
+        height={600}
+        style={{ width: '100%', height: '100%', border: '1px solid #ccc' }}
+      />
+    </div>
+  );
 }

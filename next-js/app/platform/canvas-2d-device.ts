@@ -18,16 +18,18 @@ export class Canvas2DDevice extends Device {
   }
 
   async loadResources(): Promise<void> {
-    if (this._isReady) return;
+    if (this._isReady) {
+      return;
+    }
 
     // Загружаем шрифты (пример)
-    const fontNames = ['Roboto', 'Arial'];
+    /*const fontNames = ['Roboto', 'Arial'];
     for (const fontName of fontNames) {
       const font = new FontFace(fontName, `url(/fonts/${fontName}.ttf)`);
       await font.load();
       document.fonts.add(font);
       this.fonts.set(fontName, font);
-    }
+    }*/
 
     this._isReady = true;
   }
@@ -38,9 +40,5 @@ export class Canvas2DDevice extends Device {
 
   getTime(): number {
     return performance.now();
-  }
-
-  getFont(name: string): FontFace | null {
-    return this.fonts.get(name) || null;
   }
 }

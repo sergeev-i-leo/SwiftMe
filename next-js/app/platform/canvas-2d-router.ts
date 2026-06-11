@@ -10,22 +10,53 @@ export class Canvas2DRouter extends Router {
   private animationFrameId: number | null = null;
   private lastTickTime: number = 0;
 
+  private boundHandleMouseDown: (e: MouseEvent) => void;
+  private boundHandleMouseMove: (e: MouseEvent) => void;
+  private boundHandleMouseUp: (e: MouseEvent) => void;
+  private boundHandleContextMenu: (e: MouseEvent) => void;
+
   constructor(device: Canvas2DDevice) {
     super();
     this.device = device;
     this.setDevice(device);
+
+    this.boundHandleMouseDown = this.handleMouseDown.bind(this);
+    this.boundHandleMouseMove = this.handleMouseMove.bind(this);
+    this.boundHandleMouseUp = this.handleMouseUp.bind(this);
+    this.boundHandleContextMenu = this.preventContextMenu.bind(this);
   }
 
-  // Главный метод: настройка и запуск
   run(canvas: HTMLCanvasElement, rootPage: Page): void {
     this.canvas = canvas;
     this.painter = new Canvas2DPainter(canvas);
     this.pushPage(rootPage);
 
-    // Загружаем ресурсы и запускаем цикл
+    canvas.addEventListener('mousedown', this.boundHandleMouseDown);
+    canvas.addEventListener('mousemove', this.boundHandleMouseMove);
+    canvas.addEventListener('mouseup', this.boundHandleMouseUp);
+    canvas.addEventListener('contextmenu', this.boundHandleContextMenu);
+
     (this.device as Canvas2DDevice).loadResources().then(() => {
       this.startRepainting();
     });
+  }
+
+  destroy(): void {
+    this.stopRepainting();
+
+    if (this.canvas) {
+      this.canvas.removeEventListener('mousedown', this.boundHandleMouseDown);
+      this.canvas.removeEventListener('mousemove', this.boundHandleMouseMove);
+      this.canvas.removeEventListener('mouseup', this.boundHandleMouseUp);
+      this.canvas.removeEventListener('contextmenu', this.boundHandleContextMenu);
+      this.canvas = null;
+    }
+
+    this.painter = null;
+  }
+
+  private preventContextMenu(e: MouseEvent): void {
+    e.preventDefault();
   }
 
   startRepainting(): void {
@@ -40,17 +71,14 @@ export class Canvas2DRouter extends Router {
       return;
     }
 
-    // FPS лимитер (~60 fps)
     if (now - this.lastTickTime < 16) {
       this.animationFrameId = requestAnimationFrame(this.tick.bind(this));
       return;
     }
     this.lastTickTime = now;
 
-    // Обновляем состояние твинов
     const needsRedraw = this.needsRepainting();
 
-    // Рисуем, если нужно
     if (needsRedraw) {
       this.painter.clear('#f0f0f0');
       if (this.topPage) {
@@ -59,7 +87,6 @@ export class Canvas2DRouter extends Router {
       this.painter.flush();
     }
 
-    // Продолжаем цикл, если нужны ещё кадры
     if (this.needsNextRepainting()) {
       this.animationFrameId = requestAnimationFrame(this.tick.bind(this));
     } else {
@@ -74,8 +101,28 @@ export class Canvas2DRouter extends Router {
     }
   }
 
-  // Прокси для событий мыши
-  handleMouseDown(x: number, y: number, button: number): void {
-    this.handlePointerDown(x, y, button);
+  private handleMouseDown(e: MouseEvent): void {
+    if (!this.canvas) {
+      return;
+    }
+
+    const rect = this.canvas.getBoundingClientRect();
+    const scaleX = this.canvas.width / rect.width;
+    const scaleY = this.canvas.height / rect.height;
+
+    const canvasX = (e.clientX - rect.left) * scaleX;
+    const canvasY = (e.clientY - rect.top) * scaleY;
+
+    let button = 0;
+    if (e.button === 0) button = 1;
+    else if (e.button === 2) button = 3;
+
+    this.handlePointerDown(canvasX, canvasY, button);
+  }
+
+  private handleMouseMove(e: MouseEvent): void {
+  }
+
+  private handleMouseUp(e: MouseEvent): void {
   }
 }
