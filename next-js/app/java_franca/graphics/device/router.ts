@@ -116,7 +116,6 @@ export class Router {
         if (currentTween.tweenId === this.firstTween?.tweenId) {
           this.firstTween = nextTween;
         }
-        currentTween.destroy();
         currentTween = nextTween;
       } else {
         currentTween = currentTween.nextTween;
