@@ -5,6 +5,8 @@ import franca.java.graphics.device.Device;
 
 public class Ticker extends TranspilableClass {
 
+  public static final int TICKER_TYPE_LINEAR = 1;
+
   public int initialValue;
   public int currentValue;
   public int targetValue;

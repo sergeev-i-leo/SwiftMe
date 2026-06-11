@@ -7,8 +7,6 @@ import franca.java.graphics.views.View;
 
 public class Tween extends TranspilableClass {
 
-  public static final int TICKER_TYPE_LINEAR = 1;
-
   Page page;
   View view;
   Ticker ticker;
@@ -22,7 +20,7 @@ public class Tween extends TranspilableClass {
     this.page = page;
     this.view = view;
     switch (tickerType) {
-      case Tween.TICKER_TYPE_LINEAR:
+      case Ticker.TICKER_TYPE_LINEAR:
         ticker = new LinearTicker(0, 100, duration);
         break;
       default:

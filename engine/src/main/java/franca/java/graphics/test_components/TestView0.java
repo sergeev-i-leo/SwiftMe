@@ -2,15 +2,16 @@ package franca.java.graphics.test_components;
 
 import java.util.Random;
 
+import franca.java.graphics.animations.Ticker;
+import franca.java.graphics.animations.Tween;
 import franca.java.graphics.device.Device;
 import franca.java.graphics.views.Page;
 import franca.java.graphics.views.View;
-import franca.java.graphics.animations.LinearTicker;
 import franca.java.graphics.painter.Painter;
 
 public class TestView0 extends View {
 
-  ViewAnimation viewAnimation = null;
+  MyTween myTween = null;
 
   @Override
   public void paint(Device device, Painter painter, Page page) {
@@ -18,8 +19,8 @@ public class TestView0 extends View {
     float x = new Random().nextInt(50) + 50f;
     float y = new Random().nextInt(50) + 50f;
 
-    if (viewAnimation != null) {
-      painter.paintText(String.valueOf(viewAnimation.currentValue), x, y, "", 255);
+    if (myTween != null) {
+      painter.paintText(String.valueOf(myTween.getTicker().currentValue), x, y, "", 255);
     } else {
       painter.paintText("PAINT", x, y, "", 255);
     }
@@ -29,33 +30,33 @@ public class TestView0 extends View {
   public void handlePointerDown(Device device, Page page, float painterX, float painterY, float pointedX, float pointedY, int buttonNumber) {
     if (buttonNumber == 1) {
       removeViewAnimation(device);
-      viewAnimation = new ViewAnimation(0, 100, 500, this);
-      device.registerAnimation(viewAnimation);
+      myTween = new MyTween(page, this);
+      device.registerTween(myTween);
     } else {
       device.requestRepainting();
     }
   }
 
   public void removeViewAnimation(Device device) {
-    if (viewAnimation != null) {
-      device.removeAnimation(viewAnimation);
-      viewAnimation = null;
+    if (myTween != null) {
+      device.removeTween(myTween);
+      myTween = null;
     }
   }
 
-  static class ViewAnimation extends LinearTicker {
+  static class MyTween extends Tween {
 
     TestView0 testView0;
 
-    ViewAnimation(float initialValue, float targetValue, long duration, TestView0 testView0) {
-      super(initialValue, targetValue, duration);
+    MyTween(Page page, TestView0 testView0) {
+      super(page, testView0, 500, Ticker.TICKER_TYPE_LINEAR);
 
       this.testView0 = testView0;
     }
 
     @Override
-    public boolean needsRepainting(Device device, long time) {
-      boolean result = super.needsRepainting(device, time);
+    public boolean needsRepainting(Device device) {
+      boolean result = super.needsRepainting(device);
       if (!result) {
         testView0.removeViewAnimation(device);
         return false;
