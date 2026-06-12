@@ -5,7 +5,7 @@
 //  Created by admin on 12.06.2026.
 //
 
-iimport Foundation
+import Foundation
 
 class Painter {
   func paintText(_ text: String, x: Float, y: Float, deviceFontKey: String, deviceColor: Int) {

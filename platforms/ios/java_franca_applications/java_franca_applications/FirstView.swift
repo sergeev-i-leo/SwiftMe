@@ -7,17 +7,17 @@
 
 import SwiftUI
 
-struct FirstView: View {
-  var body: some View {
-    ZStack {
-      Color.black.ignoresSafeArea()
-      Text("Первая вьюшка")
-        .font(.largeTitle)
-        .foregroundColor(.white)
-    }
+struct FirstView: SwiftUI.View {
+  var body: some SwiftUI.View {
+    GraphicsViewRepresentable()
+      .ignoresSafeArea()
   }
 }
 
-#Preview {
-  FirstView()
+struct GraphicsViewRepresentable: UIViewRepresentable {
+  func makeUIView(context: Context) -> GraphicsUIView {
+    return GraphicsUIView()
+  }
+
+  func updateUIView(_ uiView: GraphicsUIView, context: Context) {}
 }

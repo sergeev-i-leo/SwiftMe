@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-struct SecondView: View {
+struct SecondView: SwiftUI.View {
   @State private var counter = 0
 
-  var body: some View {
+  var body: some SwiftUI.View {
     VStack(spacing: 20) {
       Text("Тестовая вкладка")
         .font(.title)

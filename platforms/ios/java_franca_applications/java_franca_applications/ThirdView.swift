@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct ThirdView: View {
-  var body: some View {
+struct ThirdView: SwiftUI.View {
+  var body: some SwiftUI.View {
     ZStack {
       Color.black.ignoresSafeArea()
       Text("Третья вьюшка")
