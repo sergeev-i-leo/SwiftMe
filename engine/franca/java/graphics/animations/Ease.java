@@ -1,6 +1,6 @@
 package franca.java.graphics.animations;
 
-import contracted.franca.java.TranspilableClass;
+import franca.java.contracted.TranspilableClass;
 import franca.java.graphics.device.Router;
 
 public class Ease extends TranspilableClass {

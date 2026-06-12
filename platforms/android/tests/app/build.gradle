@@ -20,7 +20,9 @@ android {
         main {
             java.srcDirs(
                     "src/main/java",
-                    "../../../../engine"
+                    "../../../../engine",
+                    "../../../../applications",
+                    "../../platform"
             )
         }
     }

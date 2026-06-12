@@ -1,8 +1,8 @@
 package franca.java.parsers.json;
 
-import contracted.franca.java.ContractedStringBuffer;
-import contracted.franca.java.ContractedArray;
-import contracted.franca.java.ContractedRuntime;
+import franca.java.contracted.ContractedStringBuffer;
+import franca.java.contracted.ContractedArray;
+import franca.java.contracted.ContractedRuntime;
 import franca.java.parsers.Parser;
 
 public class JsonParser extends Parser {

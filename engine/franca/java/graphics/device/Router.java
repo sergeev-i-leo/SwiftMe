@@ -1,6 +1,6 @@
 package franca.java.graphics.device;
 
-import contracted.franca.java.TranspilableClass;
+import franca.java.contracted.TranspilableClass;
 import franca.java.graphics.views.Page;
 import franca.java.graphics.animations.Tween;
 

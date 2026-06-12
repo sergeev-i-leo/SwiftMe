@@ -1,7 +1,7 @@
 package franca.java.parsers.json;
 
-import contracted.franca.java.ContractedStringBuffer;
-import contracted.franca.java.TranspilableClass;
+import franca.java.contracted.ContractedStringBuffer;
+import franca.java.contracted.TranspilableClass;
 
 public class JsonElement extends TranspilableClass {
 

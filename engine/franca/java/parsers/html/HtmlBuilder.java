@@ -1,7 +1,7 @@
 package franca.java.parsers.html;
 
-import contracted.franca.java.ContractedStringBuffer;
-import contracted.franca.java.TranspilableClass;
+import franca.java.contracted.ContractedStringBuffer;
+import franca.java.contracted.TranspilableClass;
 import franca.java.parsers.json.JsonArray;
 import franca.java.parsers.json.JsonElement;
 import franca.java.parsers.json.JsonObject;

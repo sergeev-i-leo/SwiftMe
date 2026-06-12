@@ -1,7 +1,7 @@
 package franca.java.parsers.json;
 
-import contracted.franca.java.ContractedRuntime;
-import contracted.franca.java.ContractedStringBuffer;
+import franca.java.contracted.ContractedRuntime;
+import franca.java.contracted.ContractedStringBuffer;
 
 public class JsonDoublePrimitive extends JsonPrimitive {
 

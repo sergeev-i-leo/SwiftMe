@@ -1,6 +1,6 @@
 package franca.java.office.document;
 
-import contracted.franca.java.ContractedArray;
+import franca.java.contracted.ContractedArray;
 
 public class GroupBlock extends Block {
 

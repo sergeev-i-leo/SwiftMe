@@ -8,7 +8,7 @@ The process must be clear, observable and straight-forward.
 
 Write your business-logic once using Java, and Java Franca transpiles it to:
 - **C++** (with Qt or Skia backend)
-- **Tpescript** (with Graphics2D or Skia backend)
+- **Typescript** (with Graphics2D or Skia backend)
 - **Swift** (with Canvas)
 
 ## Features

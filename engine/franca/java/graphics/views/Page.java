@@ -1,7 +1,7 @@
 package franca.java.graphics.views;
 
-import contracted.franca.java.TranspilableClass;
-import contracted.franca.java.ContractedArray;
+import franca.java.contracted.TranspilableClass;
+import franca.java.contracted.ContractedArray;
 import franca.java.graphics.device.Painter;
 import franca.java.graphics.device.Router;
 

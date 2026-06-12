@@ -1,6 +1,6 @@
 package franca.java.office.document;
 
-import contracted.franca.java.TranspilableClass;
+import franca.java.contracted.TranspilableClass;
 
 public class Block extends TranspilableClass {
 }

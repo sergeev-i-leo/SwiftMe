@@ -1,8 +1,8 @@
 package franca.java.parsers.json;
 
-import contracted.franca.java.ContractedArray;
-import contracted.franca.java.ContractedDictionary;
-import contracted.franca.java.ContractedStringBuffer;
+import franca.java.contracted.ContractedArray;
+import franca.java.contracted.ContractedDictionary;
+import franca.java.contracted.ContractedStringBuffer;
 
 public class JsonObject extends JsonElement {
 
