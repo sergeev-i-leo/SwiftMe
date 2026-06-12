@@ -1,7 +1,9 @@
 # Java Franca
 
 **Java Franca** is an attempt to create a cross-platform transpiler that allows you to write UI and application logic once in Java, and transpiles it to web and ios.
-The next goal is to make it AS SIMPLE AS POSSIBLE.
+
+**It must be AS SIMPLE AS POSSIBLE**.
+
 The process must be clear, observable and straight-forward.
 
 Write your business-logic once using Java, and Java Franca transpiles it to:
