@@ -30,7 +30,10 @@ class LinearEase: Ease {
       return true
     }
 
-    currentValue = initialValue + (targetValue - initialValue) * Int((currentTime - startedTime) / duration)
+    currentValue = initialValue + Int(Double(targetValue - initialValue) * (Double(currentTime - startedTime) / Double(duration)))
+    
+    print("tick: currentValue = \(currentValue)")
+
     return true
   }
 }
