@@ -97,20 +97,34 @@ public class SkiaPanel extends JPanel {
   }
 
   private void drawTree(Graphics2D g2d, DefaultMutableTreeNode node, int x, int y) {
-    String text = node.getUserObject().toString();
+    // Получаем текст и ID
+    Object userObj = node.getUserObject();
+    String text;
+    String id;
+
+    if (userObj instanceof DocumentModel.NodeData) {
+      DocumentModel.NodeData data = (DocumentModel.NodeData) userObj;
+      text = data.text;
+      id = data.id;
+    } else {
+      text = userObj.toString();
+      id = document.getId(node);
+    }
+
+    // Рисуем с ID (можно в скобках)
+    String displayText = text + " [" + id + "]";
+
     FontMetrics fm = g2d.getFontMetrics();
-    Rectangle2D rect = fm.getStringBounds(text, g2d);
+    Rectangle2D rect = fm.getStringBounds(displayText, g2d);
     Rectangle bounds = new Rectangle(x, y, (int)rect.getWidth() + 20, (int)rect.getHeight() + 10);
 
-    // Сохраняем координаты элемента
     elementBounds.put(node, bounds);
     document.setElementBounds(node, bounds);
 
     g2d.setColor(Color.BLACK);
-    g2d.drawString(text, x + 10, y + fm.getAscent());
+    g2d.drawString(displayText, x + 10, y + fm.getAscent());
     g2d.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
 
-    // Рекурсивно рисуем детей
     int childY = y + (int)rect.getHeight() + 30;
     for (int i = 0; i < node.getChildCount(); i++) {
       drawTree(g2d, (DefaultMutableTreeNode) node.getChildAt(i), x + 20, childY);
@@ -118,7 +132,6 @@ public class SkiaPanel extends JPanel {
     }
   }
 
-  // Интерфейс для слушателей
   public interface ElementSelectionListener {
     void elementSelected(Object element);
   }

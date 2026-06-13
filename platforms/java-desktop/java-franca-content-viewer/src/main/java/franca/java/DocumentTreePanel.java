@@ -3,6 +3,7 @@ package franca.java;
 import javax.swing.*;
 import javax.swing.tree.*;
 import java.awt.*;
+import java.util.Arrays;
 import java.util.Enumeration;
 
 public class DocumentTreePanel extends JPanel {
@@ -44,9 +45,22 @@ public class DocumentTreePanel extends JPanel {
     // Поиск узла в дереве
     DefaultMutableTreeNode node = findNode(root, value);
     if (node != null) {
+      // Раскрываем всех родителей
+      expandAllParents(node);
+
+      // Выделяем узел
       TreePath path = new TreePath(node.getPath());
       tree.setSelectionPath(path);
+
+      // Скроллим к выделенному узлу
       tree.scrollPathToVisible(path);
+    }
+  }
+
+  private void expandAllParents(DefaultMutableTreeNode node) {
+    TreeNode[] path = node.getPath();
+    for (int i = 1; i < path.length; i++) { // i=1 пропускаем корень (не нужно раскрывать)
+      tree.expandPath(new TreePath(Arrays.copyOf(path, i + 1)));
     }
   }
 
@@ -69,9 +83,9 @@ public class DocumentTreePanel extends JPanel {
 
   private DefaultMutableTreeNode findNode(TreeNode node, Object value) {
     if (node instanceof DefaultMutableTreeNode) {
-      DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) node;
-      if (dmtn.getUserObject().equals(value)) {
-        return dmtn;
+      DefaultMutableTreeNode mutableTreeNode = (DefaultMutableTreeNode) node;
+      if (mutableTreeNode.getUserObject().equals(value)) {
+        return mutableTreeNode;
       }
     }
     for (int i = 0; i < node.getChildCount(); i++) {
@@ -81,29 +95,28 @@ public class DocumentTreePanel extends JPanel {
     return null;
   }
 
-  // Рендерер для стандартного выделения (подсветка выбранного элемента)
   class HighlightTreeRenderer extends DefaultTreeCellRenderer {
     @Override
-    public Component getTreeCellRendererComponent(JTree tree, Object value,
-                                                  boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+    public Component getTreeCellRendererComponent(JTree tree, Object value,  boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+      Object userObj = ((DefaultMutableTreeNode) value).getUserObject();
+      String displayText;
 
-      super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+      if (userObj instanceof DocumentModel.NodeData) {
+        DocumentModel.NodeData data = (DocumentModel.NodeData) userObj;
+        displayText = data.text + " [" + data.id + "]";
+      } else {
+        displayText = userObj.toString();
+      }
 
-      // Если элемент выделен — стандартное выделение Swing
+      super.getTreeCellRendererComponent(tree, displayText, sel, expanded, leaf, row, hasFocus);
+
       if (sel) {
-        setBackground(new Color(51, 153, 255)); // синее выделение
+        setBackground(new Color(51, 153, 255));
         setForeground(Color.WHITE);
         setOpaque(true);
       } else {
-        // Если не выделен, но есть bounds в модели — показываем, что он есть на канвасе
-        if (document.getElementBounds(value) != null) {
-          setBackground(new Color(200, 255, 200)); // светло-зелёный фон
-          setForeground(Color.BLACK);
-          setOpaque(true);
-        } else {
-          setBackground(null);
-          setOpaque(false);
-        }
+        setBackground(null);
+        setOpaque(false);
       }
       return this;
     }

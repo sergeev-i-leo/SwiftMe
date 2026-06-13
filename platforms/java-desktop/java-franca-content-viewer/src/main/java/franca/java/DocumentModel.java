@@ -8,11 +8,17 @@ public class DocumentModel {
 
   private static DocumentModel instance;
   private DefaultMutableTreeNode documentRoot;
-  private Map<Object, Rectangle> elementBounds; // для подсветки
+  private Map<Object, Rectangle> elementBounds;
+  private Map<String, Object> idToNode;        // ← идентификатор → узел
+  private Map<Object, String> nodeToId;        // ← узел → идентификатор
+  private int nextId = 1;
 
   private DocumentModel() {
     documentRoot = createSampleDocument();
     elementBounds = new HashMap<>();
+    idToNode = new HashMap<>();
+    nodeToId = new HashMap<>();
+    assignIds(documentRoot);  // проставляем ID
   }
 
   public static DocumentModel getInstance() {
@@ -20,6 +26,17 @@ public class DocumentModel {
       instance = new DocumentModel();
     }
     return instance;
+  }
+
+  private void assignIds(DefaultMutableTreeNode node) {
+    String id = "node_" + nextId++;
+    node.setUserObject(new NodeData(node.getUserObject().toString(), id));
+    idToNode.put(id, node);
+    nodeToId.put(node, id);
+
+    for (int i = 0; i < node.getChildCount(); i++) {
+      assignIds((DefaultMutableTreeNode) node.getChildAt(i));
+    }
   }
 
   private DefaultMutableTreeNode createSampleDocument() {
@@ -50,5 +67,29 @@ public class DocumentModel {
 
   public Rectangle getElementBounds(Object element) {
     return elementBounds.get(element);
+  }
+
+  public String getId(Object node) {
+    return nodeToId.get(node);
+  }
+
+  public Object getNodeById(String id) {
+    return idToNode.get(id);
+  }
+
+  // Вспомогательный класс для хранения данных с ID
+  public static class NodeData {
+    public String text;
+    public String id;
+
+    public NodeData(String text, String id) {
+      this.text = text;
+      this.id = id;
+    }
+
+    @Override
+    public String toString() {
+      return text;  // для отображения в дереве
+    }
   }
 }
