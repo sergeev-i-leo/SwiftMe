@@ -28,6 +28,10 @@ public class HtmlParser extends Parser {
     while (position < input.length()) {
       skipWhitespaces();
 
+      if (debuggingLevel > 1) {
+        printInput("parseHtmlNodeContents");
+      }
+
       if ((peekChar() == '<') && (peekNextChar(1) == '!')) {
         literalStringBuffer = new StringBuffer();
         literalStringBuffer.appendString("<!");
@@ -82,8 +86,6 @@ public class HtmlParser extends Parser {
           return;
         }
       }
-
-      skipWhitespaces();
 
       int storedPosition = position;
       parseHtmlNode(jsonArray);
@@ -154,7 +156,6 @@ public class HtmlParser extends Parser {
     jsonObject.put("style", styleJsonArray);
 
     while ((position < input.length()) && (peekChar() != '>') && (peekChar() != '/')) {
-
       skipWhitespaces();
 
       // attribute name
@@ -169,12 +170,16 @@ public class HtmlParser extends Parser {
       if (peekChar() != '=') {
         attributesJsonArray.add(new JsonStringPrimitive(attributeName));
         if (debuggingLevel > 1) {
-          System.out.println("boolean attribute found " + attributeName);
+          System.out.println("Boolean attribute " + attributeName);
         }
         continue;
       }
 
       skipChars(1);
+
+      if (debuggingLevel > 1) {
+        System.out.println("Valued attribute " + attributeName);
+      }
 
       parseAttributeValue(attributeName, attributesJsonArray, styleJsonArray);
     }
@@ -189,6 +194,7 @@ public class HtmlParser extends Parser {
     if (stringBuffer.isEmpty()) {
       return null;
     }
+
     return stringBuffer.getLowerCaseString();
   }
 
@@ -201,20 +207,20 @@ public class HtmlParser extends Parser {
 
     char attributeValueDelimiter = peekChar();
     if ((attributeValueDelimiter != '\"') && (attributeValueDelimiter != '\'')) {
-      StringBuffer stringBuffer = new StringBuffer();
+      literalStringBuffer = new StringBuffer();
       while (position < input.length()) {
         char c = peekChar();
         if ((c == '>') || (c == '/') || (isWhitespace(c))) {
           break;
         }
-        stringBuffer.appendChar(consumeChar());
+        literalStringBuffer.appendChar(consumeChar());
       }
       JsonObject attributeJsonObject = new JsonObject();
       attributesJsonArray.add(attributeJsonObject);
-      attributeJsonObject.putStringValue(attributeName, stringBuffer.toString());
+      attributeJsonObject.putStringValue(attributeName, literalStringBuffer.toString());
 
       if (debuggingLevel > 1) {
-        System.out.println("unquoted attribute found " + attributeName + " : " + stringBuffer.getString());
+        System.out.println("Unquoted attribute value " + literalStringBuffer.getString());
       }
       return;
     }
@@ -222,13 +228,13 @@ public class HtmlParser extends Parser {
     skipChars(1);
 
     if (!attributeName.equals("style")) {
-      StringBuffer stringBuffer = new StringBuffer();
+      literalStringBuffer = new StringBuffer();
       while (position < input.length()) {
         char c = peekChar();
         if (c == '\\') {
           skipChars(1);
           c = consumeChar();
-          stringBuffer.appendChar(c);
+          literalStringBuffer.appendChar(c);
           continue;
         }
         if (c == attributeValueDelimiter) {
@@ -238,18 +244,18 @@ public class HtmlParser extends Parser {
         if ((c == '>') || (c == '/')) {
           break;
         }
-        stringBuffer.appendChar(c);
+        literalStringBuffer.appendChar(c);
         skipChars(1);
       }
-      if (stringBuffer.isEmpty()) {
+      if (literalStringBuffer.isEmpty()) {
         return;
       }
       JsonObject attributeJsonObject = new JsonObject();
       attributesJsonArray.add(attributeJsonObject);
-      attributeJsonObject.putStringValue(attributeName, stringBuffer.toString());
+      attributeJsonObject.putStringValue(attributeName, literalStringBuffer.toString());
 
       if (debuggingLevel > 1) {
-        System.out.println("quoted attribute found " + attributeName + " : " + stringBuffer.getString());
+        System.out.println("Quoted attribute value " + literalStringBuffer.getString());
       }
 
       return;
@@ -271,16 +277,16 @@ public class HtmlParser extends Parser {
       skipChars(1);
 
       skipWhitespaces();
-      StringBuffer stringBuffer = parseStyleValue();
-      if (stringBuffer == null) {
+      parseStyleValue();
+      if (literalStringBuffer.isEmpty()) {
         break;
       }
       JsonObject styleJsonObject = new JsonObject();
       styleJsonArray.add(styleJsonObject);
-      styleJsonObject.putStringValue(styleName, stringBuffer.getString());
+      styleJsonObject.putStringValue(styleName, literalStringBuffer.getString());
 
       if (debuggingLevel > 1) {
-        System.out.println("style found " + styleName + " : " + stringBuffer.getString());
+        System.out.println("Style found " + styleName + " : " + literalStringBuffer.getString());
       }
 
       skipWhitespaces();
@@ -293,21 +299,22 @@ public class HtmlParser extends Parser {
   }
 
   private String parseStyleName() {
-    StringBuffer stringBuffer = new StringBuffer();
+
+    literalStringBuffer = new StringBuffer();
     while ((position < input.length()) && (isAttributeNameCharacter(peekChar()))) {
       char c = consumeChar();
-      stringBuffer.appendChar(c);
+      literalStringBuffer.appendChar(c);
     }
-    if (stringBuffer.isEmpty()) {
+    if (literalStringBuffer.isEmpty()) {
       return null;
     }
-    return stringBuffer.getLowerCaseString();
+    return literalStringBuffer.getLowerCaseString();
   }
 
-  private StringBuffer parseStyleValue() {
+  private void parseStyleValue() {
     skipWhitespaces();
 
-    StringBuffer stringBuffer = new StringBuffer();
+    literalStringBuffer = new StringBuffer();
     boolean insideQuotes = false;
     char quoteCharacter = 0;
 
@@ -317,7 +324,7 @@ public class HtmlParser extends Parser {
       if (c == '\\') {
         skipChars(1);
         c = consumeChar();
-        stringBuffer.appendChar(c);
+        literalStringBuffer.appendChar(c);
         continue;
       }
 
@@ -325,19 +332,19 @@ public class HtmlParser extends Parser {
       if (((c == '"') || (c == '\'')) && (!insideQuotes)) {
         insideQuotes = true;
         quoteCharacter = c;
-        stringBuffer.appendChar(consumeChar());
+        literalStringBuffer.appendChar(consumeChar());
         continue;
       }
       if ((insideQuotes) && (c == quoteCharacter)) {
         insideQuotes = false;
         quoteCharacter = 0;
-        stringBuffer.appendChar(consumeChar());
+        literalStringBuffer.appendChar(consumeChar());
         continue;
       }
 
       // inside quotes
       if (insideQuotes) {
-        stringBuffer.appendChar(consumeChar());
+        literalStringBuffer.appendChar(consumeChar());
         continue;
       }
 
@@ -346,14 +353,8 @@ public class HtmlParser extends Parser {
         break;
       }
 
-      stringBuffer.appendChar(consumeChar());
+      literalStringBuffer.appendChar(consumeChar());
     }
-
-    if (stringBuffer.isEmpty()) {
-      return null;
-    }
-
-    return stringBuffer;
   }
 
   private void parseTextContents(JsonArray jsonArray) {
@@ -641,13 +642,16 @@ public class HtmlParser extends Parser {
         break;
       }
 
+      if (literalStringBuffer == null) {
+        literalStringBuffer = new StringBuffer();
+      }
       literalStringBuffer.appendChar(consumeChar());
     }
 
     if (literalStringBuffer != null) {
       // text found
       if (debuggingLevel > 1) {
-        System.out.println("text found " + literalStringBuffer.getString());
+        System.out.println("#text " + literalStringBuffer.getString());
       }
       appendTextJsonObject(jsonArray, literalStringBuffer.getString());
     }
@@ -671,5 +675,10 @@ public class HtmlParser extends Parser {
       }
     }
     return super.peekChar();
+  }
+
+  private void printInput(String prefix) {
+    String out = input.substring(position).replaceAll("\\r\\n|\\n|\\r", "\\\\r\\\\n");
+    System.out.println(prefix + ": " + out);
   }
 }

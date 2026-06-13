@@ -1,5 +1,6 @@
 package franca.java;
 
+import franca.java.expected.StringBuffer;
 import franca.java.parsers.html.HtmlParser;
 import franca.java.parsers.json.JsonArray;
 
@@ -68,22 +69,12 @@ public class MainFrame extends JFrame {
   }
 
   private JSplitPane createParserPanel() {
-    JSplitPane leftSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-
     FileSystemListPanel fileSystemPanel = new FileSystemListPanel();
-    leftSplit.setLeftComponent(fileSystemPanel);
 
-    JSplitPane rightSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-
-    JsonTreePanel rawJsonPanel = new JsonTreePanel();
-    rightSplit.setLeftComponent(rawJsonPanel);
+    JsonTextPanel jsonTextPanel = new JsonTextPanel();
+    jsonTextPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
 
     rightTreePanel = new DocumentTreePanel(document);
-    rightSplit.setRightComponent(rightTreePanel);
-    rightSplit.setDividerLocation(400);
-
-    leftSplit.setRightComponent(rightSplit);
-    leftSplit.setDividerLocation(250);
 
     // Обработка выбора файла
     fileSystemPanel.setOnFileSelected(() -> {
@@ -96,7 +87,9 @@ public class MainFrame extends JFrame {
           JsonArray rawRoot = parser.parse(content);
 
           // Обновляем среднюю панель (сырой JSON)
-          rawJsonPanel.refresh(rawRoot);
+          StringBuffer sb = new StringBuffer();
+          rawRoot.serialize(sb, 0);
+          jsonTextPanel.setJsonText(sb.getString());
 
           // TODO: конвертация rawRoot → document
           // document.loadFromJson(rawRoot);
@@ -107,6 +100,18 @@ public class MainFrame extends JFrame {
         }
       }
     });
+
+    JSplitPane leftSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+    leftSplit.setLeftComponent(fileSystemPanel);
+
+    JSplitPane rightSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+    rightSplit.setLeftComponent(jsonTextPanel);
+    rightSplit.setRightComponent(rightTreePanel);
+    rightSplit.setDividerLocation(400);
+    rightSplit.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+
+    leftSplit.setRightComponent(rightSplit);
+    leftSplit.setDividerLocation(250);
 
     return leftSplit;
   }

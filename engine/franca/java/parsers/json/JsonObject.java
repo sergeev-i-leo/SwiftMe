@@ -31,7 +31,7 @@ public class JsonObject extends JsonElement {
       stringBuffer.appendString(name);
       stringBuffer.appendString("\": ");
       if (spacesBefore != null) {
-        jsonElement.serialize(stringBuffer, spacesBefore + 2 + name.length() + 4);
+        jsonElement.serialize(stringBuffer, spacesBefore + 2);
         if (i0 + 1 < keys.size()) {
           stringBuffer.appendString(",");
         }
