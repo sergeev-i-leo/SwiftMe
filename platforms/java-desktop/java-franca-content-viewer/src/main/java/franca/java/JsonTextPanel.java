@@ -11,7 +11,7 @@ public class JsonTextPanel extends JPanel {
     setLayout(new BorderLayout());
     textArea = new JTextArea();
     textArea.setEditable(false);
-    textArea.setFont(FontLoader.getOswaldBold(14));
+    textArea.setFont(new Font("Courier New", Font.PLAIN, 14));
     textArea.setWrapStyleWord(false);
     textArea.setLineWrap(false);
     add(new JScrollPane(textArea), BorderLayout.CENTER);

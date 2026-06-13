@@ -20,9 +20,9 @@ public class StringBuffer {
     stringBuilder.append(string);
   }
 
-  public void appendSpaces(int number) {
+  public void appendChars(char c, int number) {
     while (number > 0) {
-      appendChar(' ');
+      appendChar(c);
       number--;
     }
   }
