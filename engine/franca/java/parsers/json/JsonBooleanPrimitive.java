@@ -7,12 +7,8 @@ public class JsonBooleanPrimitive extends JsonPrimitive {
   private final boolean value;
 
   public JsonBooleanPrimitive(boolean value) {
+    super();
     this.value = value;
-  }
-
-  @Override
-  public void destroy() {
-    super.destroy();
   }
 
   @Override

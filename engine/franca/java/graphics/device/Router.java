@@ -128,7 +128,6 @@ public class Router extends TranspilableClass {
         if (currentTween.tweenId == firstTween.tweenId) {
           firstTween = nextTween;
         }
-        currentTween.destroy();
         currentTween = nextTween;
       } else {
         currentTween = currentTween.nextTween;

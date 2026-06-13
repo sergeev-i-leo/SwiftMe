@@ -7,13 +7,8 @@ public class JsonStringPrimitive extends JsonPrimitive {
   private String value;
 
   public JsonStringPrimitive(String value) {
-    this.value = copyOf(value);
-  }
-
-  @Override
-  public void destroy() {
-    delete(value);
-    super.destroy();
+    super();
+    this.value = value;
   }
 
   @Override

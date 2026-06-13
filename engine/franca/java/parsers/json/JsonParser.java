@@ -6,20 +6,12 @@ import java.util.ArrayList;
 
 public class JsonParser extends Parser {
 
-  @Override
-  public void destroy() {
-    super.destroy();
-  }
-
   public JsonElement parse(String input) {
     if (input == null) {
       return new JsonObject();
     }
 
-    if (this.input != null) {
-      delete(this.input);
-    }
-    this.input = copyOf(input);
+    this.input = input;
 
     position = 0;
     JsonElement jsonElement = parseJsonElement();

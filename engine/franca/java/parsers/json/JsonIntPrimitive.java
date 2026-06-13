@@ -8,12 +8,8 @@ public class JsonIntPrimitive extends JsonPrimitive {
   private final int value;
 
   public JsonIntPrimitive(int value) {
+    super();
     this.value = value;
-  }
-
-  @Override
-  public void destroy() {
-    super.destroy();
   }
 
   @Override

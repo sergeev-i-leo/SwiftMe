@@ -5,11 +5,6 @@ import franca.java.expected.StringBuffer;
 public class JsonNull extends JsonElement {
 
   @Override
-  public void destroy() {
-    super.destroy();
-  }
-
-  @Override
   public void serialize(StringBuffer stringBuffer, Integer spacesBefore) {
     stringBuffer.appendString("null");
   }

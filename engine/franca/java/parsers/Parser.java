@@ -14,24 +14,10 @@ public class Parser extends TranspilableClass {
   public Integer integerLiteral = null;
   public Double doubleLiteral = null;
 
-  @Override
-  public void destroy() {
-    if (input != null) {
-      delete(input);
-    }
-    if (literalStringBuffer != null) {
-      literalStringBuffer.destroy();
-    }
-    super.destroy();
-  }
-
   public String parseLiteral() {
     if (input.startsWith("false", position)) {
       booleanLiteral = false;
       skipChars(5);
-      if (literalStringBuffer != null) {
-        literalStringBuffer.destroy();
-      }
       literalStringBuffer = new StringBuffer();
       literalStringBuffer.appendString("false");
       return "boolean-literal";
@@ -39,9 +25,6 @@ public class Parser extends TranspilableClass {
     if (input.startsWith("true", position)) {
       booleanLiteral = false;
       skipChars(4);
-      if (literalStringBuffer != null) {
-        literalStringBuffer.destroy();
-      }
       literalStringBuffer = new StringBuffer();
       literalStringBuffer.appendString("true");
       return "boolean-literal";
@@ -54,8 +37,7 @@ public class Parser extends TranspilableClass {
   }
 
   public String parseNumberLiteral() {
-    char c = input.charAt(position);
-    switch (c) {
+    switch (peekChar()) {
       case '-':
       case '+':
       case '1':
@@ -72,38 +54,23 @@ public class Parser extends TranspilableClass {
         return null;
     }
     collectNumberLiteral();
-    String literal = copyOf(literalStringBuffer.getString());
-    if (integerLiteral != null) {
-      delete(integerLiteral);
-      integerLiteral = null;
-    }
+    String literal = literalStringBuffer.getString();
     integerLiteral = Runtime.stringToInteger(literal);
     if (integerLiteral != null) {
-      delete(literal);
       return "integer-literal";
     }
     integerLiteral = Runtime.hexStringToInteger(literal);
     if (integerLiteral != null) {
-      delete(literal);
       return "hex-integer-literal";
-    }
-    if (doubleLiteral != null) {
-      delete(doubleLiteral);
-      doubleLiteral = null;
     }
     doubleLiteral = Runtime.stringToDouble(literal);
     if (doubleLiteral != null) {
-      delete(literal);
       return "double-literal";
     }
-    delete(literal);
     return "error";
   }
 
   public void collectNumberLiteral() {
-    if (literalStringBuffer != null) {
-      literalStringBuffer.destroy();
-    }
     literalStringBuffer = new StringBuffer();
     while (position < input.length()) {
       char c = input.charAt(position);

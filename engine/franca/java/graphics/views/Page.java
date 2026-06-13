@@ -20,13 +20,6 @@ public class Page extends TranspilableClass {
     this.router = router;
   }
 
-  @Override
-  public void destroy() {
-    delete(views);
-    views = null;
-    super.destroy();
-  }
-
   public void paint(Painter painter) {
     for (int i = 0; i < views.size(); i++) {
       views.get(i).paint(router, painter, this);

@@ -2,10 +2,6 @@ package franca.java.expected;
 
 public class StringBuffer {
 
-  public void destroy() {
-    // for C++
-  }
-
   private StringBuilder stringBuilder = new StringBuilder();
 
   public boolean isEmpty() {

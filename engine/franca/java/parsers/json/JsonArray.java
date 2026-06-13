@@ -9,12 +9,6 @@ public class JsonArray extends JsonElement {
   private final ArrayList<JsonElement> jsonElements = new ArrayList<>();
 
   @Override
-  public void destroy() {
-    delete(jsonElements);
-    super.destroy();
-  }
-
-  @Override
   public void serialize(StringBuffer stringBuffer, Integer spacesBefore) {
     stringBuffer.appendString("[");
     stringBuffer.endLine();

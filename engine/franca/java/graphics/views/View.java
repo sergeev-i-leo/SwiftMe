@@ -6,11 +6,6 @@ import franca.java.graphics.device.Router;
 
 public class View extends JsonObject {
 
-  @Override
-  public void destroy() {
-    super.destroy();
-  }
-
   public void paint(Router router, Painter painter, Page page) {
   }
 

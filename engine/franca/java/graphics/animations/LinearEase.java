@@ -9,11 +9,6 @@ public class LinearEase extends Ease {
   }
 
   @Override
-  public void destroy() {
-    super.destroy();
-  }
-
-  @Override
   public boolean tick(Router router, long startedTime) {
 
     // returns true when needs repainting

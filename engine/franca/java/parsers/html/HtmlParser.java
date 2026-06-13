@@ -13,10 +13,7 @@ public class HtmlParser extends Parser {
   public int debuggingLevel = 0;
 
   public JsonArray parse(String input) {
-    if (this.input != null) {
-      delete(this.input);
-    }
-    this.input = copyOf(input);
+    this.input = input;
 
     position = 0;
 
@@ -32,9 +29,6 @@ public class HtmlParser extends Parser {
       skipWhitespaces();
 
       if ((peekChar() == '<') && (peekNextChar(1) == '!')) {
-        if (literalStringBuffer != null) {
-          literalStringBuffer.destroy();
-        }
         literalStringBuffer = new StringBuffer();
         literalStringBuffer.appendString("<!");
         skipChars(2);
@@ -49,9 +43,7 @@ public class HtmlParser extends Parser {
         }
         JsonObject jsonObject = new JsonObject();
         jsonArray.add(jsonObject);
-        String literal = copyOf(literalStringBuffer.getString());
-        jsonObject.putStringValue("#comment", literal);
-        delete(literal);
+        jsonObject.putStringValue("#comment", literalStringBuffer.getString());
         continue;
       }
 
@@ -151,9 +143,7 @@ public class HtmlParser extends Parser {
       char c = consumeChar();
       stringBuffer.appendChar(c);
     }
-    String string = stringBuffer.getLowerCaseString();
-    delete(stringBuffer);
-    return string;
+    return stringBuffer.getLowerCaseString();
   }
 
   private void parseHtmlAttributes(JsonObject jsonObject) {
@@ -181,14 +171,12 @@ public class HtmlParser extends Parser {
         if (debuggingLevel > 1) {
           System.out.println("boolean attribute found " + attributeName);
         }
-        delete(attributeName);
         continue;
       }
 
       skipChars(1);
 
       parseAttributeValue(attributeName, attributesJsonArray, styleJsonArray);
-      delete(attributeName);
     }
   }
 
@@ -199,12 +187,9 @@ public class HtmlParser extends Parser {
       stringBuffer.appendChar(c);
     }
     if (stringBuffer.isEmpty()) {
-      delete(stringBuffer);
       return null;
     }
-    String string = stringBuffer.getLowerCaseString();
-    delete(stringBuffer);
-    return string;
+    return stringBuffer.getLowerCaseString();
   }
 
   private boolean isAttributeNameCharacter(char c) {
@@ -231,8 +216,6 @@ public class HtmlParser extends Parser {
       if (debuggingLevel > 1) {
         System.out.println("unquoted attribute found " + attributeName + " : " + stringBuffer.getString());
       }
-
-      delete(stringBuffer);
       return;
     }
 
@@ -259,7 +242,6 @@ public class HtmlParser extends Parser {
         skipChars(1);
       }
       if (stringBuffer.isEmpty()) {
-        delete(stringBuffer);
         return;
       }
       JsonObject attributeJsonObject = new JsonObject();
@@ -270,7 +252,6 @@ public class HtmlParser extends Parser {
         System.out.println("quoted attribute found " + attributeName + " : " + stringBuffer.getString());
       }
 
-      delete(stringBuffer);
       return;
     }
 
@@ -285,7 +266,6 @@ public class HtmlParser extends Parser {
       }
       skipWhitespaces();
       if (peekChar() != ':') {
-        delete(styleName);
         break;
       }
       skipChars(1);
@@ -293,7 +273,6 @@ public class HtmlParser extends Parser {
       skipWhitespaces();
       StringBuffer stringBuffer = parseStyleValue();
       if (stringBuffer == null) {
-        delete(styleName);
         break;
       }
       JsonObject styleJsonObject = new JsonObject();
@@ -303,9 +282,6 @@ public class HtmlParser extends Parser {
       if (debuggingLevel > 1) {
         System.out.println("style found " + styleName + " : " + stringBuffer.getString());
       }
-
-      delete(styleName);
-      delete(stringBuffer);
 
       skipWhitespaces();
       if (peekChar() != ';') {
@@ -323,12 +299,9 @@ public class HtmlParser extends Parser {
       stringBuffer.appendChar(c);
     }
     if (stringBuffer.isEmpty()) {
-      delete(stringBuffer);
       return null;
     }
-    String string = stringBuffer.getLowerCaseString();
-    delete(stringBuffer);
-    return string;
+    return stringBuffer.getLowerCaseString();
   }
 
   private StringBuffer parseStyleValue() {
@@ -377,7 +350,6 @@ public class HtmlParser extends Parser {
     }
 
     if (stringBuffer.isEmpty()) {
-      delete(stringBuffer);
       return null;
     }
 
@@ -386,12 +358,9 @@ public class HtmlParser extends Parser {
 
   private void parseTextContents(JsonArray jsonArray) {
 
-    if (literalStringBuffer != null) {
-      literalStringBuffer.destroy();
-      literalStringBuffer = null;
-    }
+    literalStringBuffer = null;
 
-    boolean acceptSpaces = false;
+    boolean skipSpaces = true;
 
     while (position < input.length()) {
       if (peekChar() == '\r') {
@@ -402,12 +371,16 @@ public class HtmlParser extends Parser {
         skipWhitespaces();
         continue;
       }
+      if ((peekChar() == ' ') && (skipSpaces)) {
+        skipWhitespaces();
+        continue;
+      }
       if (peekString("&amp;")) {
         if (literalStringBuffer == null) {
           literalStringBuffer = new StringBuffer();
         }
         literalStringBuffer.appendString("&");
-        acceptSpaces = true;
+        skipSpaces = false;
         skipChars(5);
         continue;
       }
@@ -416,7 +389,7 @@ public class HtmlParser extends Parser {
           literalStringBuffer = new StringBuffer();
         }
         literalStringBuffer.appendString("<");
-        acceptSpaces = true;
+        skipSpaces = false;
         skipChars(4);
         continue;
       }
@@ -425,7 +398,7 @@ public class HtmlParser extends Parser {
           literalStringBuffer = new StringBuffer();
         }
         literalStringBuffer.appendString(">");
-        acceptSpaces = true;
+        skipSpaces = false;
         skipChars(4);
         continue;
       }
@@ -434,7 +407,7 @@ public class HtmlParser extends Parser {
           literalStringBuffer = new StringBuffer();
         }
         literalStringBuffer.appendString("\"");
-        acceptSpaces = true;
+        skipSpaces = false;
         skipChars(6);
         continue;
       }
@@ -443,7 +416,7 @@ public class HtmlParser extends Parser {
           literalStringBuffer = new StringBuffer();
         }
         literalStringBuffer.appendString("'");
-        acceptSpaces = true;
+        skipSpaces = false;
         skipChars(5);
         continue;
       }
@@ -452,7 +425,7 @@ public class HtmlParser extends Parser {
           literalStringBuffer = new StringBuffer();
         }
         literalStringBuffer.appendString(" ");
-        acceptSpaces = true;
+        skipSpaces = false;
         skipChars(6);
         continue;
       }
@@ -461,7 +434,7 @@ public class HtmlParser extends Parser {
           literalStringBuffer = new StringBuffer();
         }
         literalStringBuffer.appendString("Á");
-        acceptSpaces = true;
+        skipSpaces = false;
         skipChars(8);
         continue;
       }
@@ -470,7 +443,7 @@ public class HtmlParser extends Parser {
           literalStringBuffer = new StringBuffer();
         }
         literalStringBuffer.appendString("á");
-        acceptSpaces = true;
+        skipSpaces = false;
         skipChars(8);
         continue;
       }
@@ -479,7 +452,7 @@ public class HtmlParser extends Parser {
           literalStringBuffer = new StringBuffer();
         }
         literalStringBuffer.appendString("É");
-        acceptSpaces = true;
+        skipSpaces = false;
         skipChars(8);
         continue;
       }
@@ -488,7 +461,7 @@ public class HtmlParser extends Parser {
           literalStringBuffer = new StringBuffer();
         }
         literalStringBuffer.appendString("é");
-        acceptSpaces = true;
+        skipSpaces = false;
         skipChars(8);
         continue;
       }
@@ -497,7 +470,7 @@ public class HtmlParser extends Parser {
           literalStringBuffer = new StringBuffer();
         }
         literalStringBuffer.appendString("Í");
-        acceptSpaces = true;
+        skipSpaces = false;
         skipChars(8);
         continue;
       }
@@ -506,7 +479,7 @@ public class HtmlParser extends Parser {
           literalStringBuffer = new StringBuffer();
         }
         literalStringBuffer.appendString("í");
-        acceptSpaces = true;
+        skipSpaces = false;
         skipChars(8);
         continue;
       }
@@ -515,7 +488,7 @@ public class HtmlParser extends Parser {
           literalStringBuffer = new StringBuffer();
         }
         literalStringBuffer.appendString("Ó");
-        acceptSpaces = true;
+        skipSpaces = false;
         skipChars(8);
         continue;
       }
@@ -524,7 +497,7 @@ public class HtmlParser extends Parser {
           literalStringBuffer = new StringBuffer();
         }
         literalStringBuffer.appendString("ó");
-        acceptSpaces = true;
+        skipSpaces = false;
         skipChars(8);
         continue;
       }
@@ -533,7 +506,7 @@ public class HtmlParser extends Parser {
           literalStringBuffer = new StringBuffer();
         }
         literalStringBuffer.appendString("Ú");
-        acceptSpaces = true;
+        skipSpaces = false;
         skipChars(8);
         continue;
       }
@@ -542,7 +515,7 @@ public class HtmlParser extends Parser {
           literalStringBuffer = new StringBuffer();
         }
         literalStringBuffer.appendString("ú");
-        acceptSpaces = true;
+        skipSpaces = false;
         skipChars(8);
         continue;
       }
@@ -551,7 +524,7 @@ public class HtmlParser extends Parser {
           literalStringBuffer = new StringBuffer();
         }
         literalStringBuffer.appendString("Ñ");
-        acceptSpaces = true;
+        skipSpaces = false;
         skipChars(8);
         continue;
       }
@@ -560,7 +533,7 @@ public class HtmlParser extends Parser {
           literalStringBuffer = new StringBuffer();
         }
         literalStringBuffer.appendString("ñ");
-        acceptSpaces = true;
+        skipSpaces = false;
         skipChars(8);
         continue;
       }
@@ -569,7 +542,7 @@ public class HtmlParser extends Parser {
           literalStringBuffer = new StringBuffer();
         }
         literalStringBuffer.appendString("©");
-        acceptSpaces = true;
+        skipSpaces = false;
         skipChars(8);
         continue;
       }
@@ -578,7 +551,7 @@ public class HtmlParser extends Parser {
           literalStringBuffer = new StringBuffer();
         }
         literalStringBuffer.appendString("®");
-        acceptSpaces = true;
+        skipSpaces = false;
         skipChars(5);
         continue;
       }
@@ -587,7 +560,7 @@ public class HtmlParser extends Parser {
           literalStringBuffer = new StringBuffer();
         }
         literalStringBuffer.appendString("™");
-        acceptSpaces = true;
+        skipSpaces = false;
         skipChars(7);
         continue;
       }
@@ -604,7 +577,7 @@ public class HtmlParser extends Parser {
           literalStringBuffer = new StringBuffer();
         }
         literalStringBuffer.appendString("£");
-        acceptSpaces = true;
+        skipSpaces = false;
         skipChars(7);
         continue;
       }
@@ -659,35 +632,24 @@ public class HtmlParser extends Parser {
           literalStringBuffer = null;
         }
         appendTextJsonObject(jsonArray, "<br>");
-        acceptSpaces = false;
+        skipSpaces = true;
         skipChars(4);
         continue;
       }
       char c = peekChar();
       if (c == '<') {
-        if (peekString("<br>")) {
-        } else if (peekNextChar(1) != '!') {
-          break;
-        }
+        break;
       }
 
-
-
-      textStringBuffer.appendCharacter(consumeChar());
+      literalStringBuffer.appendChar(consumeChar());
     }
 
-    if (htmlLetterStringBuffer != null) {
-      // not completed html character
-      textStringBuffer.appendString(htmlLetterStringBuffer.getString());
-      delete(htmlLetterStringBuffer);
-    }
-
-    if (textStringBuffer.isNotEmpty()) {
+    if (literalStringBuffer != null) {
+      // text found
       if (debuggingLevel > 1) {
-        System.out.println("text found " + textStringBuffer.getString());
+        System.out.println("text found " + literalStringBuffer.getString());
       }
-      appendTextJsonObject(jsonArray, textStringBuffer.getString());
-      delete(textStringBuffer);
+      appendTextJsonObject(jsonArray, literalStringBuffer.getString());
     }
   }
 

@@ -23,11 +23,6 @@ public class Ease extends TranspilableClass {
     this.duration = duration;
   }
 
-  @Override
-  public void destroy() {
-    super.destroy();
-  }
-
   public boolean isRunning() {
     return currentValue != targetValue;
   }
