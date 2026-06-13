@@ -2,6 +2,12 @@ package franca.java.expected;
 
 public class ExpectedRuntime {
 
+  private static long nextId = 0L;
+
+  public static synchronized long getId() {
+    return ++nextId;
+  }
+
   public static Integer parseInt(String input) {
     if (input == null) {
       return null;

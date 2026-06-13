@@ -77,7 +77,7 @@ public class HtmlParser extends Parser {
       int storedPosition = position;
       parseHtmlNode(jsonArray);
       if (storedPosition == position) {
-        // no cycling!
+        // avoid cycling
         return;
       }
     }
@@ -85,7 +85,7 @@ public class HtmlParser extends Parser {
 
   public void parseHtmlNode(JsonArray jsonArray) {
     if (consumeCharacter() != '<') {
-      // oops, goodbye cycling
+      // avoid cycling
       skipCharacters(1);
       return;
     }
@@ -594,66 +594,5 @@ public class HtmlParser extends Parser {
       }
     }
     return super.peekCharacter();
-  }
-
-  public void toStringBuffer(JsonArray jsonArray, ExpectedStringBuilder expectedStringBuilder) {
-    for (int i = 0; i < jsonArray.size(); i++) {
-      JsonObject jsonObject = jsonArray.getJsonObject(i);
-      if (jsonObject == null) {
-        continue;
-      }
-      String tagName = jsonObject.getStringValue("tagName");
-      JsonArray contentsJsonArray = jsonObject.getJsonArray("contents");
-      if (tagName != null) {
-        expectedStringBuilder.appendCharacter('<');
-        expectedStringBuilder.appendString(tagName);
-        expectedStringBuilder.appendCharacter('>');
-      }
-      if (contentsJsonArray != null) {
-        toStringBuffer(contentsJsonArray, expectedStringBuilder);
-      }
-    }
-  }
-
-  public JsonArray transformToDocumentModel(JsonArray inputJsonArray) {
-    JsonArray outputJsonArray = new JsonArray();
-/* TODO
-    String tagName = jsonObject.getStringMember("tagName");
-    if ((tagName.equals("th")) || (tagName.equals("td"))) {
-      String colspan = jsonObject.getStringMember("colspan");
-      if (colspan != null) {
-        OptionalInt optionalInt = SwiftRuntime.parseInt(colspan);
-        if (optionalInt == null) {
-          jsonObject.setIntegerMember("columns-count", 1);
-        } else if (optionalInt.value < 1) {
-          jsonObject.setIntegerMember("columns-count", 1);
-          delete(optionalInt);
-        } else {
-          jsonObject.setIntegerMember("columns-count", optionalInt.value);
-          delete(optionalInt);
-        }
-        delete(colspan);
-      } else {
-        jsonObject.setIntegerMember("columns-count", 1);
-      }
-
-      String rowspan = jsonObject.getStringMember("rowspan");
-      if (rowspan != null) {
-        OptionalInt optionalInt = SwiftRuntime.parseInt(rowspan);
-        if (optionalInt == null) {
-          jsonObject.setIntegerMember("rows-count", 1);
-        } else if (optionalInt.value < 1) {
-          jsonObject.setIntegerMember("rows-count", 1);
-          delete(optionalInt);
-        } else {
-          jsonObject.setIntegerMember("rows-count", optionalInt.value);
-          delete(optionalInt);
-        }
-        delete(rowspan);
-      } else {
-        jsonObject.setIntegerMember("rows-count", 1);
-      }
-    }*/
-    return outputJsonArray;
   }
 }

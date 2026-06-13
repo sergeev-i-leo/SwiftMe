@@ -1,4 +1,4 @@
-package franca.java.parsers.html;
+package franca.java.office.document;
 
 import franca.java.expected.ExpectedStringBuilder;
 import franca.java.expected.TranspilableClass;

@@ -35,14 +35,6 @@ public class DocumentModel {
     // Временная заглушка
     documentRoot = createSampleDocument();
     assignIds(documentRoot);
-
-    // Оповещаем слушателей
-    fireDocumentChanged();
-  }
-
-  private void fireDocumentChanged() {
-    // Уведомляем все панели, что дерево обновилось
-    // Можно через PropertyChangeSupport или свой слушатель
   }
 
   private void assignIds(DefaultMutableTreeNode node) {

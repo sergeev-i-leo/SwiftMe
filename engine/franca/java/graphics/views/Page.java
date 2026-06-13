@@ -15,6 +15,8 @@ public class Page extends TranspilableClass {
   public Page nextPage = null;
 
   public Page(Router router) {
+    super();
+
     this.router = router;
   }
 

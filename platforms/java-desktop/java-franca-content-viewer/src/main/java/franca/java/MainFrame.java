@@ -1,5 +1,8 @@
 package franca.java;
 
+import franca.java.parsers.html.HtmlParser;
+import franca.java.parsers.json.JsonArray;
+
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -65,47 +68,47 @@ public class MainFrame extends JFrame {
   }
 
   private JSplitPane createParserPanel() {
-    JSplitPane splitPane = new JSplitPane();
+    JSplitPane leftSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 
-    // Твой готовый компонент
     FileSystemListPanel fileSystemPanel = new FileSystemListPanel();
+    leftSplit.setLeftComponent(fileSystemPanel);
+
+    JSplitPane rightSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+
+    JsonTreePanel rawJsonPanel = new JsonTreePanel();
+    rightSplit.setLeftComponent(rawJsonPanel);
+
+    rightTreePanel = new DocumentTreePanel(document);
+    rightSplit.setRightComponent(rightTreePanel);
+    rightSplit.setDividerLocation(400);
+
+    leftSplit.setRightComponent(rightSplit);
+    leftSplit.setDividerLocation(250);
+
+    // Обработка выбора файла
     fileSystemPanel.setOnFileSelected(() -> {
       File selectedFile = fileSystemPanel.getSelectedFile();
-      if ((selectedFile != null) && (selectedFile.getName().endsWith(".html"))) {
+      if (selectedFile != null && selectedFile.getName().endsWith(".html")) {
         try {
           String content = new String(Files.readAllBytes(selectedFile.toPath()));
-          document.loadFromJson(content);
+          HtmlParser parser = new HtmlParser();
+          parser.debuggingLevel = 0;
+          JsonArray rawRoot = parser.parse(content);
 
-          rightTreePanel.refresh();
-          if (skiaPanel != null) {
-            skiaPanel.refresh();
-          }
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
-      } else if ((selectedFile != null) && (selectedFile.getName().endsWith(".md"))) {
-        try {
-          String content = new String(Files.readAllBytes(selectedFile.toPath()));
-          document.loadFromJson(content);
+          // Обновляем среднюю панель (сырой JSON)
+          rawJsonPanel.refresh(rawRoot);
 
-          // Обновляем деревья
-          rightTreePanel.refresh();
-          if (skiaPanel != null) {
-            skiaPanel.refresh();
-          }
+          // TODO: конвертация rawRoot → document
+          // document.loadFromJson(rawRoot);
+          // rightTreePanel.refresh();
+
         } catch (Exception e) {
           e.printStackTrace();
         }
       }
     });
 
-    splitPane.setLeftComponent(fileSystemPanel);
-
-    rightTreePanel = new DocumentTreePanel(document);
-    splitPane.setRightComponent(rightTreePanel);
-    splitPane.setDividerLocation(300);
-
-    return splitPane;
+    return leftSplit;
   }
 
   private JSplitPane createSkiaPanel() {

@@ -17,6 +17,8 @@ public class Tween extends TranspilableClass {
   public Tween nextTween = null;
 
   public Tween(Page page, View view, long duration, int tickerType) {
+    super();
+
     this.page = page;
     this.view = view;
     switch (tickerType) {

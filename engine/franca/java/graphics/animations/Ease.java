@@ -14,6 +14,8 @@ public class Ease extends TranspilableClass {
   public long duration;
 
   public Ease(int initialValue, int targetValue, long duration) {
+    super();
+
     this.initialValue = initialValue;
     this.currentValue = this.initialValue;
     this.targetValue = targetValue;
