@@ -20,6 +20,7 @@ public class JsonTreePanel extends JPanel {
   public JsonTreePanel() {
     setLayout(new BorderLayout());
     tree = new JTree();
+    tree.setFont(FontLoader.getOswaldBold(14));
     tree.setCellRenderer(new JsonTreeCellRenderer());
     add(new JScrollPane(tree), BorderLayout.CENTER);
   }
@@ -136,23 +137,11 @@ public class JsonTreePanel extends JPanel {
 
   private static class JsonTreeCellRenderer extends DefaultTreeCellRenderer {
 
-    private static final Color COLOR_OBJECT = new Color(128, 0, 128);      // фиолетовый
-    private static final Color COLOR_ARRAY = new Color(0, 0, 128);         // тёмно-синий
-    private static final Color COLOR_STRING = new Color(0, 128, 0);        // зелёный
-    private static final Color COLOR_NUMBER = new Color(0, 0, 255);        // синий
-    private static final Color COLOR_BOOLEAN = new Color(255, 128, 0);     // оранжевый
-    private static final Color COLOR_NULL = new Color(128, 128, 128);      // серый
-
-    private Font defaultFont;
-
-    public JsonTreeCellRenderer() {
-      defaultFont = UIManager.getFont("Tree.font");
-      setFont(defaultFont);
-      setIcon(null);  // убираем стандартные иконки
-      setClosedIcon(null);
-      setOpenIcon(null);
-      setLeafIcon(null);
-    }
+    private static final Color COLOR_TAG = new Color(128, 128, 128);     // серый для тегов
+    private static final Color COLOR_ATTR = Color.BLACK;                 // чёрный для атрибутов
+    private static final Color COLOR_STRING = new Color(0, 0, 255);      // синий для значений
+    private static final Color COLOR_NUMBER = new Color(0, 128, 0);      // зелёный для чисел
+    private static final Color COLOR_SELECTION_BG = new Color(220, 220, 220); // светло-серый
 
     @Override
     public Component getTreeCellRendererComponent(JTree tree, Object value,
@@ -160,43 +149,62 @@ public class JsonTreePanel extends JPanel {
 
       super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
       setIcon(null);
+      setClosedIcon(null);
+      setOpenIcon(null);
+      setLeafIcon(null);
 
-      if (value instanceof DefaultMutableTreeNode) {
-        Object userObj = ((DefaultMutableTreeNode) value).getUserObject();
-
-        if (userObj instanceof String) {
-          String text = (String) userObj;
-
-          if (text.startsWith("Array")) {
-            setForeground(COLOR_ARRAY);
-          } else if (text.equals("Object")) {
-            setForeground(COLOR_OBJECT);
-          } else if (text.startsWith("\"") && text.endsWith("\"")) {
-            setForeground(COLOR_STRING);
-          } else if (text.equals("true") || text.equals("false")) {
-            setForeground(COLOR_BOOLEAN);
-          } else if (text.equals("null")) {
-            setForeground(COLOR_NULL);
-          } else {
-            // пробуем определить число
-            try {
-              Double.parseDouble(text);
-              setForeground(COLOR_NUMBER);
-            } catch (NumberFormatException e) {
-              setForeground(Color.BLACK);
-            }
-          }
-        }
-      }
-
+      // Убираем стандартное выделение
       if (sel) {
-        setBackground(new Color(51, 153, 255));
-        setForeground(Color.WHITE);
+        setBackground(COLOR_SELECTION_BG);
+        setForeground(Color.BLACK);
       } else {
         setBackground(null);
       }
 
+      // Форматируем текст
+      if (value instanceof DefaultMutableTreeNode) {
+        Object userObj = ((DefaultMutableTreeNode) value).getUserObject();
+        if (userObj instanceof String) {
+          String text = (String) userObj;
+
+          if (text.contains(": ")) {
+            String[] parts = text.split(": ", 2);
+            String key = parts[0];
+            String val = parts.length > 1 ? parts[1] : "";
+
+            String html = String.format(
+              "<html><span style='color:#808080'>%s:</span> <span style='color:#000000'>%s</span></html>",
+              key, escapeHtml(val)
+            );
+            setText(html);
+          } else if (text.startsWith("Array[") || text.equals("Object")) {
+            setText(text);
+          } else if (isNumber(text)) {
+            setForeground(COLOR_NUMBER);
+            setText(text);
+          } else {
+            setForeground(COLOR_STRING);
+            setText(text);
+          }
+        }
+      }
+
       return this;
+    }
+
+    private boolean isNumber(String str) {
+      try {
+        Double.parseDouble(str);
+        return true;
+      } catch (NumberFormatException e) {
+        return false;
+      }
+    }
+
+    private String escapeHtml(String str) {
+      return str.replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;");
     }
   }
 }
