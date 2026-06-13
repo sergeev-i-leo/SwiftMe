@@ -16,7 +16,7 @@ public class FileSystemListPanel extends JPanel {
     setLayout(new BorderLayout());
 
     // Start from user's home directory
-    currentDirectory = new File(System.getProperty("user.dir"));
+    currentDirectory = new File("./samples");
 
     // List model and JList
     listModel = new DefaultListModel<>();
@@ -129,7 +129,7 @@ public class FileSystemListPanel extends JPanel {
       });
 
       for (File file : files) {
-        if (file.isDirectory() || file.getName().endsWith(".md") || file.getName().endsWith(".json")) {
+        if (file.isDirectory() || file.getName().endsWith(".html") || file.getName().endsWith(".md")) {
           listModel.addElement(file.getAbsolutePath());
         }
       }

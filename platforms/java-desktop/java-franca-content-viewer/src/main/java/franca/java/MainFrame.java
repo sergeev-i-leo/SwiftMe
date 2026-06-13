@@ -3,6 +3,8 @@ package franca.java;
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.nio.file.Files;
 
 public class MainFrame extends JFrame {
 
@@ -64,11 +66,45 @@ public class MainFrame extends JFrame {
 
   private JSplitPane createParserPanel() {
     JSplitPane splitPane = new JSplitPane();
-    splitPane.setLeftComponent(new FileSystemListPanel());
+
+    // Твой готовый компонент
+    FileSystemListPanel fileSystemPanel = new FileSystemListPanel();
+    fileSystemPanel.setOnFileSelected(() -> {
+      File selectedFile = fileSystemPanel.getSelectedFile();
+      if ((selectedFile != null) && (selectedFile.getName().endsWith(".html"))) {
+        try {
+          String content = new String(Files.readAllBytes(selectedFile.toPath()));
+          document.loadFromJson(content);
+
+          rightTreePanel.refresh();
+          if (skiaPanel != null) {
+            skiaPanel.refresh();
+          }
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      } else if ((selectedFile != null) && (selectedFile.getName().endsWith(".md"))) {
+        try {
+          String content = new String(Files.readAllBytes(selectedFile.toPath()));
+          document.loadFromJson(content);
+
+          // Обновляем деревья
+          rightTreePanel.refresh();
+          if (skiaPanel != null) {
+            skiaPanel.refresh();
+          }
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
+    });
+
+    splitPane.setLeftComponent(fileSystemPanel);
 
     rightTreePanel = new DocumentTreePanel(document);
     splitPane.setRightComponent(rightTreePanel);
     splitPane.setDividerLocation(300);
+
     return splitPane;
   }
 
@@ -78,17 +114,17 @@ public class MainFrame extends JFrame {
     skiaPanel = new SkiaPanel(document);
     splitPane.setLeftComponent(skiaPanel);
 
-    // Правая панель — синхронизированное дерево документа
     DocumentTreePanel syncTreePanel = new DocumentTreePanel(document);
+    skiaPanel.setRightTree(syncTreePanel);
     splitPane.setRightComponent(syncTreePanel);
     splitPane.setDividerLocation(600);
 
     // 1. Клик в дереве → подсветка на SkiaPanel
     syncTreePanel.addTreeSelectionListener(e -> {
       Object selected = syncTreePanel.getSelectedValue();
+      System.out.println("Tree selected: " + selected); // отладка
       if (selected != null) {
         skiaPanel.highlightElement(selected);
-        // Также выделяем в правом дереве на вкладке 1
         if (rightTreePanel != null) {
           rightTreePanel.setSelectedValue(selected);
         }
@@ -97,7 +133,9 @@ public class MainFrame extends JFrame {
 
     // 2. Клик на SkiaPanel → выделение в дереве
     skiaPanel.addElementSelectionListener(selected -> {
+      System.out.println("Skia selected: " + selected); // отладка
       if (selected != null) {
+        // Проверяем, что syncTreePanel может найти этот узел
         syncTreePanel.setSelectedValue(selected);
         if (rightTreePanel != null) {
           rightTreePanel.setSelectedValue(selected);

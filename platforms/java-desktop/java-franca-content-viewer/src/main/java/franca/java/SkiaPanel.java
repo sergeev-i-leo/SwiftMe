@@ -11,6 +11,7 @@ import java.util.Map;
 
 public class SkiaPanel extends JPanel {
 
+  private DocumentTreePanel rightTree;
   private DocumentModel document;
   private Object highlightedElement;
   private Map<Object, Rectangle> elementBounds; // локальный кэш координат
@@ -34,7 +35,17 @@ public class SkiaPanel extends JPanel {
     });
   }
 
-  // Получить элемент по координатам
+  public void setRightTree(DocumentTreePanel tree) {
+    this.rightTree = tree;
+  }
+
+  public void refresh() {
+    if (rightTree != null) {
+      rightTree.refresh();  // обновляем дерево справа
+    }
+    repaint();
+  }
+
   public Object getElementAt(int x, int y) {
     for (Map.Entry<Object, Rectangle> entry : elementBounds.entrySet()) {
       if (entry.getValue().contains(x, y)) {

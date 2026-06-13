@@ -17,9 +17,15 @@ public class DocumentTreePanel extends JPanel {
 
     tree = new JTree(document.getDocumentRoot());
     tree.setCellRenderer(new HighlightTreeRenderer());
-    tree.setSelectionRow(0); // выделяем корень по умолчанию
+    tree.setSelectionRow(0);
 
     add(new JScrollPane(tree), BorderLayout.CENTER);
+  }
+
+  public void refresh() {
+    tree.setModel(new DefaultTreeModel(document.getDocumentRoot()));
+    tree.repaint();
+    expandAll(); // если нужно
   }
 
   public void addTreeSelectionListener(javax.swing.event.TreeSelectionListener listener) {
@@ -33,33 +39,68 @@ public class DocumentTreePanel extends JPanel {
   public Object getSelectedValue() {
     TreePath path = tree.getSelectionPath();
     if (path != null) {
-      return path.getLastPathComponent();
+      DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+      return selectedNode;
     }
     return null;
   }
 
   public void setSelectedValue(Object value) {
+    // Получаем ID из переданного объекта
+    String targetId = null;
+    if (value instanceof DefaultMutableTreeNode) {
+      Object userObject = ((DefaultMutableTreeNode) value).getUserObject();
+      if (userObject instanceof DocumentModel.NodeData) {
+        targetId = ((DocumentModel.NodeData) userObject).id;
+      }
+    } else {
+      targetId = document.getId(value);
+    }
+
+    if (targetId == null) {
+      System.err.println("Cannot find ID for value: " + value);
+      return;
+    }
+
     DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
     TreeNode root = (TreeNode) model.getRoot();
 
-    // Поиск узла в дереве
-    DefaultMutableTreeNode node = findNode(root, value);
+    DefaultMutableTreeNode node = findNodeById(root, targetId);
     if (node != null) {
-      // Раскрываем всех родителей
       expandAllParents(node);
-
-      // Выделяем узел
       TreePath path = new TreePath(node.getPath());
       tree.setSelectionPath(path);
-
-      // Скроллим к выделенному узлу
       tree.scrollPathToVisible(path);
+    } else {
+      System.err.println("Node not found for ID: " + targetId);
     }
+  }
+
+  private DefaultMutableTreeNode findNodeById(TreeNode node, String targetId) {
+    if (node instanceof DefaultMutableTreeNode) {
+      DefaultMutableTreeNode mutableTreeNode = (DefaultMutableTreeNode) node;
+      Object userObject = mutableTreeNode.getUserObject();
+
+      String nodeId = null;
+      if (userObject instanceof DocumentModel.NodeData) {
+        nodeId = ((DocumentModel.NodeData) userObject).id;
+      }
+
+      if (targetId != null && targetId.equals(nodeId)) {
+        return mutableTreeNode;
+      }
+    }
+
+    for (int i = 0; i < node.getChildCount(); i++) {
+      DefaultMutableTreeNode found = findNodeById(node.getChildAt(i), targetId);
+      if (found != null) return found;
+    }
+    return null;
   }
 
   private void expandAllParents(DefaultMutableTreeNode node) {
     TreeNode[] path = node.getPath();
-    for (int i = 1; i < path.length; i++) { // i=1 пропускаем корень (не нужно раскрывать)
+    for (int i = 1; i < path.length; i++) {
       tree.expandPath(new TreePath(Arrays.copyOf(path, i + 1)));
     }
   }
@@ -81,23 +122,10 @@ public class DocumentTreePanel extends JPanel {
     tree.expandPath(parent);
   }
 
-  private DefaultMutableTreeNode findNode(TreeNode node, Object value) {
-    if (node instanceof DefaultMutableTreeNode) {
-      DefaultMutableTreeNode mutableTreeNode = (DefaultMutableTreeNode) node;
-      if (mutableTreeNode.getUserObject().equals(value)) {
-        return mutableTreeNode;
-      }
-    }
-    for (int i = 0; i < node.getChildCount(); i++) {
-      DefaultMutableTreeNode found = findNode(node.getChildAt(i), value);
-      if (found != null) return found;
-    }
-    return null;
-  }
-
   class HighlightTreeRenderer extends DefaultTreeCellRenderer {
     @Override
-    public Component getTreeCellRendererComponent(JTree tree, Object value,  boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+    public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+
       Object userObj = ((DefaultMutableTreeNode) value).getUserObject();
       String displayText;
 

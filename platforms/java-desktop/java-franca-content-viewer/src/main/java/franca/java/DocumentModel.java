@@ -28,6 +28,23 @@ public class DocumentModel {
     return instance;
   }
 
+  public void loadFromJson(String jsonContent) {
+    // TODO: парсинг JSON в дерево документа
+    System.out.println("Loading JSON: " + jsonContent);
+
+    // Временная заглушка
+    documentRoot = createSampleDocument();
+    assignIds(documentRoot);
+
+    // Оповещаем слушателей
+    fireDocumentChanged();
+  }
+
+  private void fireDocumentChanged() {
+    // Уведомляем все панели, что дерево обновилось
+    // Можно через PropertyChangeSupport или свой слушатель
+  }
+
   private void assignIds(DefaultMutableTreeNode node) {
     String id = "node_" + nextId++;
     node.setUserObject(new NodeData(node.getUserObject().toString(), id));
