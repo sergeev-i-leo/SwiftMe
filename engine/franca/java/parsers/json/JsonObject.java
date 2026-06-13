@@ -1,6 +1,6 @@
 package franca.java.parsers.json;
 
-import franca.java.expected.ExpectedStringBuilder;
+import franca.java.expected.StringBuffer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,9 +16,9 @@ public class JsonObject extends JsonElement {
   }
 
   @Override
-  public void serialize(ExpectedStringBuilder expectedStringBuilder, Integer spacesBefore) {
-    expectedStringBuilder.appendString("{");
-    expectedStringBuilder.endLine();
+  public void serialize(StringBuffer stringBuffer, Integer spacesBefore) {
+    stringBuffer.appendString("{");
+    stringBuffer.endLine();
 
     ArrayList<String> keys = keys();
     for (int i0 = 0; i0 < keys.size(); i0++) {
@@ -29,32 +29,32 @@ public class JsonObject extends JsonElement {
       }
       if (spacesBefore != null) {
         for (int i1 = 0; i1 < spacesBefore + 2; i1++) {
-          expectedStringBuilder.appendString(" ");
+          stringBuffer.appendString(" ");
         }
       }
       String name = keys.get(i0);
-      expectedStringBuilder.appendString("\"");
-      expectedStringBuilder.appendString(name);
-      expectedStringBuilder.appendString("\": ");
+      stringBuffer.appendString("\"");
+      stringBuffer.appendString(name);
+      stringBuffer.appendString("\": ");
       if (spacesBefore != null) {
-        jsonElement.serialize(expectedStringBuilder, spacesBefore + 2 + name.length() + 4);
+        jsonElement.serialize(stringBuffer, spacesBefore + 2 + name.length() + 4);
         if (i0 + 1 < keys.size()) {
-          expectedStringBuilder.appendString(",");
+          stringBuffer.appendString(",");
         }
-        expectedStringBuilder.endLine();
+        stringBuffer.endLine();
       } else {
-        jsonElement.serialize(expectedStringBuilder, null);
+        jsonElement.serialize(stringBuffer, null);
         if (i0 + 1 < keys.size()) {
-          expectedStringBuilder.appendString(",");
+          stringBuffer.appendString(",");
         }
       }
     }
     if (spacesBefore != null) {
       for (int i = 0; i < spacesBefore; i++) {
-        expectedStringBuilder.appendString(" ");
+        stringBuffer.appendString(" ");
       }
     }
-    expectedStringBuilder.appendString("}");
+    stringBuffer.appendString("}");
   }
 
   public String getClassName() {

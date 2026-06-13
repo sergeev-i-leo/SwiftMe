@@ -1,6 +1,10 @@
 package franca.java.expected;
 
-public class ExpectedStringBuilder {
+public class StringBuffer {
+
+  public void destroy() {
+    // for C++
+  }
 
   private StringBuilder stringBuilder = new StringBuilder();
 
@@ -12,8 +16,8 @@ public class ExpectedStringBuilder {
     return stringBuilder.length() > 0;
   }
 
-  public void appendCharacter(char character) {
-    stringBuilder.append(character);
+  public void appendCharacter(char c) {
+    stringBuilder.append(c);
   }
 
   public void appendString(String string) {

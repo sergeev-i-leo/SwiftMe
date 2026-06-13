@@ -1,6 +1,6 @@
 package franca.java.parsers.json;
 
-import franca.java.expected.ExpectedStringBuilder;
+import franca.java.expected.StringBuffer;
 
 import java.util.ArrayList;
 
@@ -15,9 +15,9 @@ public class JsonArray extends JsonElement {
   }
 
   @Override
-  public void serialize(ExpectedStringBuilder expectedStringBuilder, Integer spacesBefore) {
-    expectedStringBuilder.appendString("[");
-    expectedStringBuilder.endLine();
+  public void serialize(StringBuffer stringBuffer, Integer spacesBefore) {
+    stringBuffer.appendString("[");
+    stringBuffer.endLine();
 
     for (int i0 = 0; i0 < size(); i0++) {
       JsonElement jsonElement = get(i0);
@@ -27,26 +27,26 @@ public class JsonArray extends JsonElement {
       }
       if (spacesBefore != null) {
         for (int i1 = 0; i1 < spacesBefore + 2; i1++) {
-          expectedStringBuilder.appendString(" ");
+          stringBuffer.appendString(" ");
         }
-        jsonElement.serialize(expectedStringBuilder, spacesBefore + 2);
+        jsonElement.serialize(stringBuffer, spacesBefore + 2);
         if (i0 + 1 < size()) {
-          expectedStringBuilder.appendString(",");
+          stringBuffer.appendString(",");
         }
-        expectedStringBuilder.endLine();
+        stringBuffer.endLine();
       } else {
-        jsonElement.serialize(expectedStringBuilder, null);
+        jsonElement.serialize(stringBuffer, null);
         if (i0 + 1 < size()) {
-          expectedStringBuilder.appendString(",");
+          stringBuffer.appendString(",");
         }
       }
     }
     if (spacesBefore != null) {
       for (int i1 = 0; i1 < spacesBefore; i1++) {
-        expectedStringBuilder.appendString(" ");
+        stringBuffer.appendString(" ");
       }
     }
-    expectedStringBuilder.appendString("]");
+    stringBuffer.appendString("]");
   }
 
   @Override

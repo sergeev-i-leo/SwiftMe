@@ -1,6 +1,6 @@
 package franca.java.expected;
 
-public class ExpectedRuntime {
+public class Runtime {
 
   private static long nextId = 0L;
 
@@ -8,7 +8,7 @@ public class ExpectedRuntime {
     return ++nextId;
   }
 
-  public static Integer parseInt(String input) {
+  public static Integer stringToInteger(String input) {
     if (input == null) {
       return null;
     }
@@ -19,11 +19,13 @@ public class ExpectedRuntime {
     }
   }
 
-  public static Integer parseHexInt(String input) {
+  public static Integer stringToHexInteger(String input) {
     if (input == null) {
       return null;
     }
-    if ((input.startsWith("x")) || (input.startsWith("X"))) {
+    if ((input.startsWith("0x")) || (input.startsWith("0X"))) {
+      input = input.substring(2);
+    } else if ((input.startsWith("x")) || (input.startsWith("X"))) {
       input = input.substring(1);
     }
     try {
@@ -33,7 +35,7 @@ public class ExpectedRuntime {
     }
   }
 
-  public static Double parseDouble(String input) {
+  public static Double stringToDouble(String input) {
     if (input == null) {
       return null;
     }

@@ -1,6 +1,6 @@
 package franca.java.parsers.json;
 
-import franca.java.expected.ExpectedStringBuilder;
+import franca.java.expected.StringBuffer;
 
 public class JsonBooleanPrimitive extends JsonPrimitive {
 
@@ -16,8 +16,8 @@ public class JsonBooleanPrimitive extends JsonPrimitive {
   }
 
   @Override
-  public void serialize(ExpectedStringBuilder expectedStringBuilder, Integer spacesBefore) {
-    expectedStringBuilder.appendString(value ? "true" : "false");
+  public void serialize(StringBuffer stringBuffer, Integer spacesBefore) {
+    stringBuffer.appendString(value ? "true" : "false");
   }
 
   @Override

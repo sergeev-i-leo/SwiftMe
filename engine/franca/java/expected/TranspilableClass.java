@@ -6,7 +6,7 @@ public class TranspilableClass {
   private String dataName = null;
 
   public TranspilableClass() {
-    id = ExpectedRuntime.getId();
+    id = Runtime.getId();
   }
 
   public void destroy() {
