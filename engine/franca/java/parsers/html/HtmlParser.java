@@ -300,8 +300,7 @@ public class HtmlParser extends Parser {
       }
       skipChars(1);
 
-      skipWhitespaces();
-      parseStyleValue();
+      parseStyleValue(styleValueDelimiter);
       if (literalStringBuffer.isEmpty()) {
         break;
       }
@@ -315,7 +314,6 @@ public class HtmlParser extends Parser {
         outputStringBuffer.appendEndLine();
       }
 
-      skipWhitespaces();
       if (peekChar() != ';') {
         break;
       }
@@ -330,7 +328,7 @@ public class HtmlParser extends Parser {
     skipWhitespaces();
 
     literalStringBuffer = new StringBuffer();
-    while ((position < input.length()) && (isAttributeNameCharacter(peekChar()))) {
+    while ((position < input.length()) && (isStyleNameCharacter(peekChar()))) {
       char c = consumeChar();
       literalStringBuffer.appendChar(c);
     }
@@ -340,7 +338,11 @@ public class HtmlParser extends Parser {
     return literalStringBuffer.getLowerCaseString();
   }
 
-  private void parseStyleValue() {
+  private boolean isStyleNameCharacter(char c) {
+    return (c != ':') && (c != '=') && (c != '>') && (c != '/') && (!Character.isWhitespace(c));
+  }
+
+  private void parseStyleValue(char styleValueDelimiter) {
     skipWhitespaces();
 
     literalStringBuffer = new StringBuffer();
@@ -355,6 +357,10 @@ public class HtmlParser extends Parser {
         c = consumeChar();
         literalStringBuffer.appendChar(c);
         continue;
+      }
+
+      if (c == styleValueDelimiter) {
+        break;
       }
 
       // quotes
@@ -391,6 +397,7 @@ public class HtmlParser extends Parser {
 
     char attributeValueDelimiter = peekChar();
     if ((attributeValueDelimiter != '\"') && (attributeValueDelimiter != '\'')) {
+      // not quoted
       literalStringBuffer = new StringBuffer();
       while (position < input.length()) {
         char c = peekChar();
@@ -442,7 +449,7 @@ public class HtmlParser extends Parser {
 
     if (outputStringBuffer != null) {
       outputStringBuffer.appendChars('.', outputSpacesNumber);
-      outputStringBuffer.appendString(attributeName + " = " + literalStringBuffer.getString());
+      outputStringBuffer.appendString(attributeName + " = \"" + literalStringBuffer.getString() + "\"");
       outputStringBuffer.appendEndLine();
     }
   }

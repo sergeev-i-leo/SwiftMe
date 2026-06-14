@@ -5,13 +5,16 @@ import franca.java.parsers.html.HtmlParser;
 import franca.java.parsers.json.JsonArray;
 
 import javax.swing.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 public class MainFrame extends JFrame {
+
+  private int WEB_SERVER_PORT = 8080;
+
+  private WebServer webServer;
 
   private DocumentModel document;
 
@@ -20,6 +23,8 @@ public class MainFrame extends JFrame {
   private GraphicsPanel graphicsPanel;
 
   public MainFrame() {
+    startWebServer();
+
     setTitle("JavaFrancaContentViewer");
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setSize(1200, 800);
@@ -39,6 +44,17 @@ public class MainFrame extends JFrame {
     tabbedPane.addTab("Skia View", createSkiaPanel());
 
     add(tabbedPane);
+  }
+
+  private void startWebServer() {
+    new Thread(() -> {
+      try {
+        webServer = new WebServer();
+        webServer.start(WEB_SERVER_PORT);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }).start();
   }
 
   private JMenuBar createMenuBar() {
