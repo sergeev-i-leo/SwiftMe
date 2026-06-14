@@ -7,9 +7,9 @@ import franca.java.data.json.JsonArray;
 import franca.java.data.json.JsonObject;
 import franca.java.data.json.JsonStringPrimitive;
 import franca.java.office.document.Block;
-import franca.java.office.document.typography.Heading;
-import franca.java.office.document.typography.Paragraph;
-import franca.java.office.document.typography.TextRun;
+import franca.java.office.document.typography.HeadingBlock;
+import franca.java.office.document.typography.ParagraphBlock;
+import franca.java.office.document.typography.LettersBlock;
 import franca.java.office.document.typography.TextBlock;
 
 public class HtmlParser extends Parser {
@@ -49,9 +49,9 @@ public class HtmlParser extends Parser {
           literalStringBuffer.appendChar(c);
         }
 
-        TextRun textRun = new TextRun();
-        parentBlock.addBlock(textRun);
-        textRun.setText(literalStringBuffer.getString());
+        LettersBlock lettersBlock = new LettersBlock();
+        parentBlock.addBlock(lettersBlock);
+        lettersBlock.setText(literalStringBuffer.getString());
 
         if (outputStringBuffer != null) {
           outputStringBuffer.appendChars('.', outputSpacesNumber);
@@ -105,26 +105,24 @@ public class HtmlParser extends Parser {
       String childTagName = parseTagName();
       Block childBlock;
       if (childTagName.equals("h1")) {
-        childBlock = new Heading(1);
+        childBlock = new HeadingBlock(1);
       } else if (childTagName.equals("h2")) {
-        childBlock = new Heading(2);
+        childBlock = new HeadingBlock(2);
       } else if (childTagName.equals("h3")) {
-        childBlock = new Heading(3);
+        childBlock = new HeadingBlock(3);
       } else if (childTagName.equals("h4")) {
-        childBlock = new Heading(4);
+        childBlock = new HeadingBlock(4);
       } else if (childTagName.equals("h5")) {
-        childBlock = new Heading(5);
+        childBlock = new HeadingBlock(5);
       } else if (childTagName.equals("h6")) {
-        childBlock = new Heading(6);
+        childBlock = new HeadingBlock(6);
       } else if (childTagName.equals("p")) {
-        childBlock = new Paragraph();
+        childBlock = new ParagraphBlock();
       } else {
         childBlock = new Block();
       }
 
       parentBlock.addBlock(childBlock);
-
-      skipChars(1);
 
       int storedPosition = position;
       parseHtmlNode(childTagName, childBlock);
@@ -137,25 +135,20 @@ public class HtmlParser extends Parser {
 
   public void parseHtmlNode(String tagName, Block targetBlock) {
 
+    skipWhitespaces();
+
     if (outputStringBuffer != null) {
       outputStringBuffer.appendChars('.', outputSpacesNumber);
-      outputStringBuffer.appendString("< " + targetBlock.getClassName());
+      outputStringBuffer.appendString("< " + targetBlock.getClassName() + ", tagName = " + tagName);
       outputStringBuffer.appendEndLine();
     }
-
-    outputSpacesNumber += 2;
 
     JsonObject jsonObject = new JsonObject();
     targetBlock.attributes.add(jsonObject);
     jsonObject.putStringValue("name", "tag-name");
     jsonObject.putStringValue("value", tagName);
 
-    if (outputStringBuffer != null) {
-      outputStringBuffer.appendChars('.', outputSpacesNumber);
-      outputStringBuffer.appendString("tagName = " + tagName);
-      outputStringBuffer.appendEndLine();
-    }
-
+    outputSpacesNumber += 2;
     parseHtmlAttributes(targetBlock);
     outputSpacesNumber -= 2;
 
@@ -743,30 +736,30 @@ public class HtmlParser extends Parser {
       }
       if (peekString("&nbsp;")) {
         if ((literalStringBuffer != null) && (literalStringBuffer.isNotEmpty())) {
-          parentBlock = appendTextBlock(parentBlock, TextRun.TYPE_TEXT, literalStringBuffer.getString());
+          parentBlock = appendTextBlock(parentBlock, LettersBlock.TYPE_TEXT, literalStringBuffer.getString());
           literalStringBuffer = null;
         }
-        parentBlock = appendTextBlock(parentBlock, TextRun.TYPE_NON_BREAKABLE_SPACE, " ");
+        parentBlock = appendTextBlock(parentBlock, LettersBlock.TYPE_NON_BREAKABLE_SPACE, " ");
         skipSpaces = false;
         skipChars(6);
         continue;
       }
       if (peekString("<br>")) {
         if ((literalStringBuffer != null) && (literalStringBuffer.isNotEmpty())) {
-          parentBlock = appendTextBlock(parentBlock, TextRun.TYPE_TEXT, literalStringBuffer.getString());
+          parentBlock = appendTextBlock(parentBlock, LettersBlock.TYPE_TEXT, literalStringBuffer.getString());
           literalStringBuffer = null;
         }
-        parentBlock = appendTextBlock(parentBlock, TextRun.TYPE_LINE_BREAK, "");
+        parentBlock = appendTextBlock(parentBlock, LettersBlock.TYPE_LINE_BREAK, "");
         skipSpaces = true;
         skipChars(4);
         continue;
       }
       if (peekChar() == ' ') {
         if ((literalStringBuffer != null) && (literalStringBuffer.isNotEmpty())) {
-          parentBlock = appendTextBlock(parentBlock, TextRun.TYPE_TEXT, literalStringBuffer.getString());
+          parentBlock = appendTextBlock(parentBlock, LettersBlock.TYPE_TEXT, literalStringBuffer.getString());
           literalStringBuffer = null;
         }
-        parentBlock = appendTextBlock(parentBlock, TextRun.TYPE_SPACE, " ");
+        parentBlock = appendTextBlock(parentBlock, LettersBlock.TYPE_SPACE, " ");
         skipSpaces = false;
         skipChars(1);
         continue;
@@ -786,7 +779,7 @@ public class HtmlParser extends Parser {
 
     if ((literalStringBuffer != null) && (literalStringBuffer.isNotEmpty())) {
       // text found
-      appendTextBlock(parentBlock, TextRun.TYPE_TEXT, literalStringBuffer.getString());
+      appendTextBlock(parentBlock, LettersBlock.TYPE_TEXT, literalStringBuffer.getString());
     }
   }
 
@@ -802,10 +795,10 @@ public class HtmlParser extends Parser {
         outputStringBuffer.appendEndLine();
       }
     }
-    TextRun textRun = new TextRun();
-    parentBlock.addBlock(textRun);
-    textRun.type = textType;
-    textRun.setText(text);
+    LettersBlock lettersBlock = new LettersBlock();
+    parentBlock.addBlock(lettersBlock);
+    lettersBlock.type = textType;
+    lettersBlock.setText(text);
     if (outputStringBuffer != null) {
       outputStringBuffer.appendChars('.', outputSpacesNumber);
       outputStringBuffer.appendString(textType + " \"" + text + "\"");

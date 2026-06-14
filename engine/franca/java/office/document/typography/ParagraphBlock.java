@@ -1,8 +1,8 @@
 package franca.java.office.document.typography;
 
-public class Paragraph extends TextBlock {
+public class ParagraphBlock extends TextBlock {
 
   public String getClassName() {
-    return "Paragraph";
+    return "ParagraphBlock";
   }
 }

@@ -2,8 +2,8 @@ package franca.java.graphics.animations;
 
 import franca.java.expected.TranspilableClass;
 import franca.java.graphics.device.Router;
-import franca.java.graphics.views.Page;
-import franca.java.graphics.views.View;
+import franca.java.graphics.Page;
+import franca.java.graphics.View;
 
 public class Tween extends TranspilableClass {
 

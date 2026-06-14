@@ -3,9 +3,9 @@ package franca.java;
 import franca.java.data.json.JsonElement;
 import franca.java.data.json.JsonObject;
 import franca.java.office.document.Block;
-import franca.java.office.document.typography.Heading;
-import franca.java.office.document.typography.Paragraph;
-import franca.java.office.document.typography.TextRun;
+import franca.java.office.document.typography.HeadingBlock;
+import franca.java.office.document.typography.ParagraphBlock;
+import franca.java.office.document.typography.LettersBlock;
 import franca.java.office.document.typography.TextBlock;
 
 import javax.swing.*;
@@ -41,18 +41,18 @@ public class DocumentTreePanel extends JPanel {
   private DefaultMutableTreeNode buildTree(Block block) {
     String nodeText;
 
-    if (block instanceof Heading) {
-      Heading heading = (Heading) block;
-      nodeText = heading.getClassName() + " [" + heading.level + "] = \"" + heading.getText() + "\"";
-    } else if (block instanceof Paragraph) {
-      Paragraph paragraph = (Paragraph) block;
-      nodeText = paragraph.getClassName() + " = \"" + paragraph.getText() + "\"";
+    if (block instanceof HeadingBlock) {
+      HeadingBlock headingBlock = (HeadingBlock) block;
+      nodeText = headingBlock.getClassName() + " [" + headingBlock.level + "] = \"" + headingBlock.getText() + "\"";
+    } else if (block instanceof ParagraphBlock) {
+      ParagraphBlock paragraphBlock = (ParagraphBlock) block;
+      nodeText = paragraphBlock.getClassName() + " = \"" + paragraphBlock.getText() + "\"";
     } else if (block instanceof TextBlock) {
       TextBlock textBlock = (TextBlock) block;
       nodeText = textBlock.getClassName() + " = \"" + textBlock.getText() + "\"";
-    } else if (block instanceof TextRun) {
-      TextRun textRun = (TextRun) block;
-      nodeText = textRun.getClassName() + " [" + textRun.type + "] = \"" + textRun.getText() + "\"";
+    } else if (block instanceof LettersBlock) {
+      LettersBlock lettersBlock = (LettersBlock) block;
+      nodeText = lettersBlock.getClassName() + " [" + lettersBlock.type + "] = \"" + lettersBlock.getText() + "\"";
     } else {
       nodeText = block.getClassName();
     }
