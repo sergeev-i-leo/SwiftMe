@@ -100,6 +100,8 @@ public class HtmlParser extends Parser {
         }
       }
 
+      skipChars(1);
+
       String childTagName = parseTagName();
       Block childBlock;
       if (childTagName.equals("h1")) {
@@ -122,7 +124,7 @@ public class HtmlParser extends Parser {
 
       parentBlock.addBlock(childBlock);
 
-      skipChars(1 + childTagName.length());
+      skipChars(1);
 
       int storedPosition = position;
       parseHtmlNode(childTagName, childBlock);
@@ -319,9 +321,9 @@ public class HtmlParser extends Parser {
       if (literalStringBuffer.isEmpty()) {
         break;
       }
-      JsonObject jsonObject = new JsonObject();
-      jsonArray.add(jsonObject);
-      jsonObject.putStringValue(styleName, literalStringBuffer.getString());
+
+      jsonArray.addStringItem(styleName);
+      jsonArray.addStringItem(literalStringBuffer.getString());
 
       if (outputStringBuffer != null) {
         outputStringBuffer.appendChars('.', outputSpacesNumber);

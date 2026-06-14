@@ -103,8 +103,16 @@ public class DocumentTreePanel extends JPanel {
     // style
     if (block.style.size() > 0) {
       DefaultMutableTreeNode styleNode = new DefaultMutableTreeNode("style");
-      for (int i = 0; i < block.style.size(); i++) {
-        styleNode.add(new DefaultMutableTreeNode(block.style.getStringValue(i)));
+      for (int i = 0; i < block.style.size(); i += 2) {
+        String name = block.style.getStringValue(i);
+        String value = block.style.getStringValue(i + 1);
+        if (name == null) {
+          styleNode.add(new DefaultMutableTreeNode("STYLE ERROR"));
+        } else if (value == null) {
+          styleNode.add(new DefaultMutableTreeNode(name + " : STYLE ERROR"));
+        } else {
+          styleNode.add(new DefaultMutableTreeNode(name + " : " + value));
+        }
       }
       blockNode.add(styleNode);
     }
