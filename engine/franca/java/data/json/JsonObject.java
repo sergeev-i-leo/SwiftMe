@@ -1,4 +1,4 @@
-package franca.java.parsers.json;
+package franca.java.data.json;
 
 import franca.java.expected.StringBuffer;
 
@@ -8,6 +8,10 @@ import java.util.HashMap;
 public class JsonObject extends JsonElement {
 
   private final HashMap<String, JsonElement> jsonElements = new HashMap<>();
+
+  public String getClassName() {
+    return "JsonObject";
+  }
 
   @Override
   public void serialize(StringBuffer stringBuffer, Integer spacesBefore) {
@@ -49,10 +53,6 @@ public class JsonObject extends JsonElement {
       }
     }
     stringBuffer.appendString("}");
-  }
-
-  public String getClassName() {
-    return "JsonObject";
   }
 
   public void deserialize(JsonObject parsedJsonObject) {

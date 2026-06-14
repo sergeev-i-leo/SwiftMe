@@ -2,9 +2,9 @@ package franca.java.office.document;
 
 import franca.java.expected.StringBuffer;
 import franca.java.expected.TranspilableClass;
-import franca.java.parsers.json.JsonArray;
-import franca.java.parsers.json.JsonElement;
-import franca.java.parsers.json.JsonObject;
+import franca.java.data.json.JsonArray;
+import franca.java.data.json.JsonElement;
+import franca.java.data.json.JsonObject;
 
 public class HtmlBuilder extends TranspilableClass {
 

@@ -1,6 +1,6 @@
 package franca.java.graphics.views;
 
-import franca.java.parsers.json.JsonObject;
+import franca.java.data.json.JsonObject;
 import franca.java.graphics.device.Painter;
 import franca.java.graphics.device.Router;
 

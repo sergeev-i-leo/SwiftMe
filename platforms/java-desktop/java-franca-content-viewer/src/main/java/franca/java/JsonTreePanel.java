@@ -1,8 +1,8 @@
 package franca.java;
 
-import franca.java.parsers.json.JsonArray;
-import franca.java.parsers.json.JsonElement;
-import franca.java.parsers.json.JsonObject;
+import franca.java.data.json.JsonArray;
+import franca.java.data.json.JsonElement;
+import franca.java.data.json.JsonObject;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;

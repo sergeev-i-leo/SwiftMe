@@ -1,8 +1,8 @@
 package franca.java;
 
 import franca.java.expected.StringBuffer;
-import franca.java.parsers.html.HtmlParser;
-import franca.java.parsers.json.JsonArray;
+import franca.java.data.html.HtmlParser;
+import franca.java.data.json.JsonArray;
 
 import javax.swing.*;
 import java.io.File;

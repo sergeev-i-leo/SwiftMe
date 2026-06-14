@@ -1,11 +1,11 @@
-package franca.java.parsers.html;
+package franca.java.data.html;
 
 import franca.java.expected.StringBuffer;
 import franca.java.expected.Runtime;
-import franca.java.parsers.Parser;
-import franca.java.parsers.json.JsonArray;
-import franca.java.parsers.json.JsonObject;
-import franca.java.parsers.json.JsonStringPrimitive;
+import franca.java.data.Parser;
+import franca.java.data.json.JsonArray;
+import franca.java.data.json.JsonObject;
+import franca.java.data.json.JsonStringPrimitive;
 
 public class HtmlParser extends Parser {
 
@@ -119,7 +119,7 @@ public class HtmlParser extends Parser {
       outputStringBuffer.appendEndLine();
     }
 
-    jsonObject.putStringValue("tagName", tagName);
+    jsonObject.putStringValue("tag-name", tagName);
 
     outputSpacesNumber += 2;
     parseHtmlAttributes(jsonObject);
@@ -408,7 +408,7 @@ public class HtmlParser extends Parser {
       }
       JsonObject jsonObject = new JsonObject();
       jsonArray.add(jsonObject);
-      jsonObject.putStringValue(attributeName, literalStringBuffer.toString());
+      jsonObject.putStringValue(attributeName, literalStringBuffer.getString());
 
       if (outputStringBuffer != null) {
         outputStringBuffer.appendChars('.', outputSpacesNumber);
@@ -445,7 +445,7 @@ public class HtmlParser extends Parser {
     }
     JsonObject attributeJsonObject = new JsonObject();
     jsonArray.add(attributeJsonObject);
-    attributeJsonObject.putStringValue(attributeName, literalStringBuffer.toString());
+    attributeJsonObject.putStringValue(attributeName, literalStringBuffer.getString());
 
     if (outputStringBuffer != null) {
       outputStringBuffer.appendChars('.', outputSpacesNumber);
@@ -716,8 +716,8 @@ public class HtmlParser extends Parser {
         continue;
       }
       if (peekString("&nbsp;")) {
-        if (literalStringBuffer.isNotEmpty()) {
-          appendTextJsonObject(literalStringBuffer.toString(), "#text", jsonArray);
+        if ((literalStringBuffer != null) && (literalStringBuffer.isNotEmpty())) {
+          appendTextJsonObject(literalStringBuffer.getString(), "#text", jsonArray);
           literalStringBuffer = null;
         }
         appendTextJsonObject("&nbsp;", "#non-breakable-space", jsonArray);
@@ -726,8 +726,8 @@ public class HtmlParser extends Parser {
         continue;
       }
       if (peekString("<br>")) {
-        if (literalStringBuffer.isNotEmpty()) {
-          appendTextJsonObject(literalStringBuffer.toString(), "#text", jsonArray);
+        if ((literalStringBuffer != null) && (literalStringBuffer.isNotEmpty())) {
+          appendTextJsonObject(literalStringBuffer.getString(), "#text", jsonArray);
           literalStringBuffer = null;
         }
         appendTextJsonObject("<br>", "#line-break", jsonArray);
@@ -736,8 +736,8 @@ public class HtmlParser extends Parser {
         continue;
       }
       if (peekChar() == ' ') {
-        if (literalStringBuffer.isNotEmpty()) {
-          appendTextJsonObject(literalStringBuffer.toString(), "#text", jsonArray);
+        if ((literalStringBuffer != null) && (literalStringBuffer.isNotEmpty())) {
+          appendTextJsonObject(literalStringBuffer.getString(), "#text", jsonArray);
           literalStringBuffer = null;
         }
         appendTextJsonObject(" ", "#space", jsonArray);
@@ -758,7 +758,7 @@ public class HtmlParser extends Parser {
       skipSpaces = false;
     }
 
-    if (literalStringBuffer != null) {
+    if ((literalStringBuffer != null) && (literalStringBuffer.isNotEmpty())) {
       // text found
       appendTextJsonObject(literalStringBuffer.getString(), "#text", jsonArray);
     }
@@ -770,7 +770,7 @@ public class HtmlParser extends Parser {
     jsonObject.putStringValue(memberName, text);
     if (outputStringBuffer != null) {
       outputStringBuffer.appendChars('.', outputSpacesNumber);
-      outputStringBuffer.appendString(memberName + " \"" + literalStringBuffer.getString() + "\"");
+      outputStringBuffer.appendString(memberName + " \"" + text + "\"");
       outputStringBuffer.appendEndLine();
     }
   }

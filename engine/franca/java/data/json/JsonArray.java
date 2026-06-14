@@ -1,4 +1,4 @@
-package franca.java.parsers.json;
+package franca.java.data.json;
 
 import franca.java.expected.StringBuffer;
 
@@ -7,6 +7,10 @@ import java.util.ArrayList;
 public class JsonArray extends JsonElement {
 
   private final ArrayList<JsonElement> jsonElements = new ArrayList<>();
+
+  public String getClassName() {
+    return "JsonArray";
+  }
 
   @Override
   public void serialize(StringBuffer stringBuffer, Integer spacesBefore) {

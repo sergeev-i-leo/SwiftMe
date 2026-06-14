@@ -1,4 +1,4 @@
-package franca.java.parsers;
+package franca.java.data;
 
 import franca.java.expected.Runtime;
 import franca.java.expected.StringBuffer;

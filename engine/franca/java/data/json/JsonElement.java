@@ -1,9 +1,13 @@
-package franca.java.parsers.json;
+package franca.java.data.json;
 
 import franca.java.expected.StringBuffer;
 import franca.java.expected.TranspilableClass;
 
 public class JsonElement extends TranspilableClass {
+
+  public String getClassName() {
+    return "JsonElement";
+  }
 
   public void serialize(StringBuffer stringBuffer, Integer spacesBefore) {
   }

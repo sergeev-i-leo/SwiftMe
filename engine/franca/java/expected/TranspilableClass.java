@@ -8,6 +8,10 @@ public class TranspilableClass {
     id = Runtime.getId();
   }
 
+  public String getClassName() {
+    return "TranspilableClass";
+  }
+
   public long getId() {
     return id;
   }

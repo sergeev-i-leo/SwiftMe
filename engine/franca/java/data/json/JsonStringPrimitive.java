@@ -1,4 +1,4 @@
-package franca.java.parsers.json;
+package franca.java.data.json;
 
 import franca.java.expected.StringBuffer;
 
@@ -9,6 +9,10 @@ public class JsonStringPrimitive extends JsonPrimitive {
   public JsonStringPrimitive(String value) {
     super();
     this.value = value;
+  }
+
+  public String getClassName() {
+    return "JsonStringPrimitive";
   }
 
   @Override

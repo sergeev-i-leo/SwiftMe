@@ -1,6 +1,6 @@
-package franca.java.parsers.json;
+package franca.java.data.json;
 
-import franca.java.parsers.Parser;
+import franca.java.data.Parser;
 
 import java.util.ArrayList;
 
