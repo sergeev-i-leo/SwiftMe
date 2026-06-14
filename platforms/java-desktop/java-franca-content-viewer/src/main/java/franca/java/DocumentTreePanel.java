@@ -1,11 +1,14 @@
 package franca.java;
 
-import franca.java.data.json.JsonArray;
 import franca.java.office.document.Block;
+import franca.java.office.document.typography_blocks.HeadingBlock;
+import franca.java.office.document.typography_blocks.ParagraphBlock;
+import franca.java.office.document.typography_blocks.TextBlock;
 
 import javax.swing.*;
 import javax.swing.tree.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 
@@ -33,34 +36,61 @@ public class DocumentTreePanel extends JPanel {
   }
 
   private DefaultMutableTreeNode buildTree(Block block) {
-    String nodeText = block.getClassName();
+    String nodeText;
 
+    if (block instanceof HeadingBlock) {
+      HeadingBlock headingBlock = (HeadingBlock) block;
+      nodeText = headingBlock.getClassName() + " [" + headingBlock.level + "] = \"" + headingBlock.getText() + "\"";
+    } else if (block instanceof ParagraphBlock) {
+      ParagraphBlock paragraphBlock = (ParagraphBlock) block;
+      nodeText = paragraphBlock.getClassName() + " = \"" + paragraphBlock.getText() + "\"";
+    } else if (block instanceof TextBlock) {
+      TextBlock textBlock = (TextBlock) block;
+      nodeText = textBlock.getClassName() + " [" + textBlock.type + "] = \"" + textBlock.getText() + "\"";
+    } else {
+      nodeText = block.getClassName();
+    }
+
+    DefaultMutableTreeNode blockNode = new DefaultMutableTreeNode(nodeText);
+
+    // classes
     if (block.classes.size() > 0) {
-      nodeText += " [classes: " + joinArray(block.classes) + "]";
+      DefaultMutableTreeNode classesNode = new DefaultMutableTreeNode("classes");
+      for (int i = 0; i < block.classes.size(); i++) {
+        classesNode.add(new DefaultMutableTreeNode(block.classes.getStringValue(i)));
+      }
+      blockNode.add(classesNode);
     }
+
+    // attributes
     if (block.attributes.size() > 0) {
-      nodeText += " [attrs: " + joinArray(block.attributes) + "]";
+      DefaultMutableTreeNode attrsNode = new DefaultMutableTreeNode("attributes");
+      for (int i = 0; i < block.attributes.size(); i++) {
+        attrsNode.add(new DefaultMutableTreeNode(block.attributes.getStringValue(i)));
+      }
+      blockNode.add(attrsNode);
     }
+
+    // style
     if (block.style.size() > 0) {
-      nodeText += " [style: " + joinArray(block.style) + "]";
+      DefaultMutableTreeNode styleNode = new DefaultMutableTreeNode("style");
+      for (int i = 0; i < block.style.size(); i++) {
+        styleNode.add(new DefaultMutableTreeNode(block.style.getStringValue(i)));
+      }
+      blockNode.add(styleNode);
     }
 
-    DefaultMutableTreeNode node = new DefaultMutableTreeNode(nodeText);
-
-    for (Block child : block.blocks) {
-      node.add(buildTree(child));
+    // blocks (children)
+    ArrayList<Block> children = block.getBlocks();
+    if (children != null && !children.isEmpty()) {
+      DefaultMutableTreeNode childrenNode = new DefaultMutableTreeNode("blocks");
+      for (Block child : children) {
+        childrenNode.add(buildTree(child));
+      }
+      blockNode.add(childrenNode);
     }
 
-    return node;
-  }
-
-  private String joinArray(JsonArray array) {
-    StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < array.size(); i++) {
-      if (i > 0) sb.append(", ");
-      sb.append(array.getStringValue(i));
-    }
-    return sb.toString();
+    return blockNode;
   }
 
   public void addTreeSelectionListener(javax.swing.event.TreeSelectionListener listener) {

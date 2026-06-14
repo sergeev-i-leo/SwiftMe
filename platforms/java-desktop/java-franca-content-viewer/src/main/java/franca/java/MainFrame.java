@@ -109,13 +109,12 @@ public class MainFrame extends JFrame {
           String content = new String(Files.readAllBytes(selectedFile.toPath()), StandardCharsets.UTF_8);
           HtmlParser parser = new HtmlParser();
           StringBuffer outputStringBuffer = new StringBuffer();
-          parser.parse(content, outputStringBuffer);
-          jsonTextPanel.setJsonText(outputStringBuffer.toString());
+          DocumentModel.blocks = parser.parse(content, outputStringBuffer);
+          documentTreePanel.refresh();
 
           // TODO: конвертация raw → Block
           // DocumentModel.blocks.clear();
           // DocumentModel.blocks.add(convertedBlock);
-          // documentTreePanel.refresh();
           // skiaTreePanel.refresh();
           // skiaPanel.refresh();
 
